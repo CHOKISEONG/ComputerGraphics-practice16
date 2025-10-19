@@ -3,9 +3,6 @@
 #include "MyGL.h"
 #include "global.h"
 
-#include "TriShape.h"
-#include "LineShape.h"
-#include "RectShape.h"
 #include "PolygonShape.h"
 #include "Points.h"
 
@@ -15,7 +12,6 @@ MyGL* MyGL::my = nullptr;
 /// 그려질 도형들을 모아놓는 변수
 /// </summary>
 /// 좌클릭 - 정육면체 그리기, 우클릭 - 사각뿔그리기
-/// hi
 PolygonShape* cube;
 PolygonShape* squarePyramid;
 std::vector<PolygonShape*> lines;
@@ -29,7 +25,7 @@ void MyGL::reShape(int w, int h)
 }
 void MyGL::idle()
 {
-	
+
 	glutPostRedisplay();
 }
 void MyGL::keyboard(unsigned char key, int x, int y)
@@ -104,12 +100,12 @@ void MyGL::draw()
 	model = glm::rotate(model, glm::radians(tmp), glm::vec3(0.0, 1.0, 0.0)); // y는 반대로
 	unsigned int modelLocation = glGetUniformLocation(my->shaderProgramID, "modelTransform");
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-	
+
 	for (const auto& l : lines)
 		l->draw(my->shaderProgramID);
 	cube->draw(my->shaderProgramID);
 	squarePyramid->draw(my->shaderProgramID);
-	
+
 	glutSwapBuffers();
 }
 void MyGL::mouse(int button, int state, int x, int y)
@@ -145,7 +141,7 @@ void MyGL::motion(int x, int y)
 	// 마우스 좌표를 openGL 좌표계로 변환
 	float crx = (2.0f * x - my->width) / my->width;
 	float cry = -(2.0f * y - my->height) / my->height;
-	
+
 	pvx = crx;
 	pvy = cry;
 
@@ -180,7 +176,7 @@ void MyGL::run(int argc, char** argv)
 	lines[0]->setColor(1.0f, 0.0f, 0.0f);
 	lines[1]->setColor(0.0f, 1.0f, 0.0f);
 	lines[2]->setColor(0.0f, 0.0f, 1.0f);
-	
+
 	cube = new PolygonShape();
 
 	float sp[15]{ 0.0f,0.5f,0.0f
@@ -189,6 +185,9 @@ void MyGL::run(int argc, char** argv)
 			,-0.2f,-0.2f,-0.2f
 			,0.2f,-0.2f,-0.2f };
 	squarePyramid = new PolygonShape(PolygonType::SQUAREPYRAMID, sp);
+
+	cube->drawNone();
+	squarePyramid->drawNone();
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);

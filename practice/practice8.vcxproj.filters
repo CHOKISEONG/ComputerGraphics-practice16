@@ -18,19 +18,10 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="TriShape.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="myGL.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LineShape.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="global.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="RectShape.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Points.cpp">
@@ -49,22 +40,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TriShape.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Shape.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="MyGL.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LineShape.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="global.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="RectShape.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Points.h">

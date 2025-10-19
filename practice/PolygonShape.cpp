@@ -8,29 +8,27 @@ PolygonShape::PolygonShape() // 기본은 정육각형
 			5,4,7,5,7,6,
 			0,7,4,0,3,7,
 			2,6,7,2,7,3 };
-	initColor();
 	slope = 0.0f;
 	r = 1.0f;
 	polygonType = PolygonType::POLYGON;
 	moved = 0.0f;
 	std::fill(drawingIdx, drawingIdx + 12, true);
-	initBuffer();
 
 	setMidpoint(0.0f, 0.0f);
 	setRegularHexagon();
+	initBuffer();
 }
 
 PolygonShape::PolygonShape(PolygonType type, const float* f)
 {
-	initColor();
 	slope = 0.0f;
 	r = 1.0f;
 	if (type == PolygonType::LINE)
 	{
 		index = { 0,1 };
-		
+
 		polygonType = PolygonType::LINE;
-		initBuffer();
+
 
 		setMidpoint(0.0f, 0.0f);
 		add(f[0], f[1], f[2]);
@@ -40,8 +38,6 @@ PolygonShape::PolygonShape(PolygonType type, const float* f)
 	{
 		index = { 0,1,2,0,2,3 };
 		polygonType = PolygonType::RECTSHAPE;
-
-		initBuffer();
 
 		setMidpoint(0.0f, 0.0f);
 		add(f[0], f[1], f[2]);
@@ -55,7 +51,6 @@ PolygonShape::PolygonShape(PolygonType type, const float* f)
 		polygonType = PolygonType::SQUAREPYRAMID;
 
 		std::fill(drawingIdx, drawingIdx + 12, true);
-		initBuffer();
 
 		setMidpoint(0.0f, 0.0f);
 		for (int i{}; i < 15; i += 3)
@@ -63,18 +58,19 @@ PolygonShape::PolygonShape(PolygonType type, const float* f)
 			add(f[0 + i], f[1 + i], f[2 + i]);
 		}
 	}
+
+	initBuffer();
 }
 
 PolygonShape::PolygonShape(std::vector<float>& v) {
-	verticles = v;
-	initColor();
+	positions = v;
 	initBuffer();
 }
 
 PolygonShape::PolygonShape(const PolygonShape& other)
 	: vao(other.vao)
 	, ebo(other.ebo)
-	, verticles(other.verticles) // std::vector는 깊은 복사됨
+	, positions(other.positions) // std::vector는 깊은 복사됨
 	, index(other.index)
 	, isMoving(other.isMoving)
 	, canAnimation(other.canAnimation)
@@ -87,45 +83,29 @@ PolygonShape::PolygonShape(const PolygonShape& other)
 	, polygonType(other.polygonType)
 {
 	midpoint[0] = other.midpoint[0]; midpoint[1] = other.midpoint[1];
-	initColor();
 	initBuffer();
 }
 
 PolygonShape::~PolygonShape()
 {
 	glDeleteVertexArrays(1, &vao);
-	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(1, &vboPos);
+	glDeleteBuffers(1, &vboColor);
 	glDeleteBuffers(1, &ebo);
 }
 
 void PolygonShape::updateVbo()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, verticles.size() * sizeof(float), verticles.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-}
+	glBindBuffer(GL_ARRAY_BUFFER, vboPos);
+	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(float), positions.data(), GL_STATIC_DRAW);
 
-void PolygonShape::initColor()
-{
-	for (int j{}; j < 6; ++j)
-	{
-		float r = zeroToOne(gen);
-		float g = zeroToOne(gen);
-		float b = zeroToOne(gen);
-		std::cout << r << "," << g << "," << b << " 색 설정\n";
-		colors[0 + j * 6] = r;
-		colors[1 + j * 6] = g;
-		colors[2 + j * 6] = b;
-		colors[3 + j * 6] = r;
-		colors[4 + j * 6] = g;
-		colors[5 + j * 6] = b;
-	}
-	
+	glBindBuffer(GL_ARRAY_BUFFER, vboColor);
+	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), colors.data(), GL_STATIC_DRAW);
 }
 
 void PolygonShape::setColor(const float r, const float g, const float b)
 {
-	for (int i{}; i < 12; ++i)
+	for (int i{}; i < positions.size() / 3; ++i)
 	{
 		colors[0 + (i * 3)] = r;
 		colors[1 + (i * 3)] = g;
@@ -136,7 +116,7 @@ void PolygonShape::setColor(const float r, const float g, const float b)
 void PolygonShape::setPaperFoldingShape()
 {
 	add(midpoint[0], midpoint[1] + r * ROOT2 * sin(PI / 2));
-	add(midpoint[0] + r * ROOT2 * cos(PI), midpoint[1] );
+	add(midpoint[0] + r * ROOT2 * cos(PI), midpoint[1]);
 	add(midpoint[0], midpoint[1] + r * ROOT2 * sin(-PI / 2));
 	add(midpoint[0] + r * ROOT2, midpoint[1]);
 
@@ -149,15 +129,15 @@ void PolygonShape::setPaperFoldingShape()
 void PolygonShape::setRegularHexagon()
 {
 	float d = 0.5f;
-	add(d,d,d);
-	add(-d,d,d);
-	add(-d,-d,d);
-	add(d,-d,d);
+	add(d, d, d);
+	add(-d, d, d);
+	add(-d, -d, d);
+	add(d, -d, d);
 
-	add(d,d,-d);
-	add(-d,d,-d);
-	add(-d,-d,-d);
-	add(d,-d,-d);
+	add(d, d, -d);
+	add(-d, d, -d);
+	add(-d, -d, -d);
+	add(d, -d, -d);
 }
 
 void PolygonShape::changeAnimType()
@@ -182,18 +162,25 @@ void PolygonShape::setMidpoint(const float x, const float y)
 void PolygonShape::initBuffer()
 {
 	glGenVertexArrays(1, &vao);
-	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &vboPos);
+	glGenBuffers(1, &vboColor);
+	glGenBuffers(1, &ebo);
 
 	glBindVertexArray(vao);
 
-	// Vertex buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, verticles.size() * sizeof(float), verticles.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	// 위치 연결
+	glBindBuffer(GL_ARRAY_BUFFER, vboPos);
+	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(float), positions.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// Index buffer
-	glGenBuffers(1, &ebo);
+	// 색상 연결
+	glBindBuffer(GL_ARRAY_BUFFER, vboColor);
+	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), colors.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(1);
+
+	// 인덱스 연결
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index.size() * sizeof(unsigned int), index.data(), GL_STATIC_DRAW);
 
@@ -231,17 +218,17 @@ void PolygonShape::movingTriangle()
 	float targetX = midpoint[0] + polygonDis * cos(-PI / 4);
 	float targetY = midpoint[1] + polygonDis * sin(-PI / 4);
 
-	if (verticles[6] < targetX) {
-		verticles[6] += moveSpeed;
-		if (verticles[6] > targetX) verticles[6] = targetX;
+	if (positions[6] < targetX) {
+		positions[6] += moveSpeed;
+		if (positions[6] > targetX) positions[6] = targetX;
 	}
 
-	if (verticles[7] > targetY) {
-		verticles[7] -= moveSpeed;
-		if (verticles[7] < targetY) verticles[7] = targetY;
+	if (positions[7] > targetY) {
+		positions[7] -= moveSpeed;
+		if (positions[7] < targetY) positions[7] = targetY;
 	}
 
-	if (verticles[6] >= targetX && verticles[7] <= targetY) {
+	if (positions[6] >= targetX && positions[7] <= targetY) {
 		polygonType = PolygonType::TRIANGLE;
 	}
 }
@@ -251,17 +238,17 @@ void PolygonShape::movingRectangle()
 	float targetX = midpoint[0] + polygonDis * cos(3 * PI / 4);
 	float targetY = midpoint[1] + polygonDis * sin(3 * PI / 4);
 
-	if (verticles[9] > targetX) {
-		verticles[9] -= moveSpeed;
-		if (verticles[9] < targetX) verticles[9] = targetX;
+	if (positions[9] > targetX) {
+		positions[9] -= moveSpeed;
+		if (positions[9] < targetX) positions[9] = targetX;
 	}
 
-	if (verticles[10] < targetY) {
-		verticles[10] += moveSpeed;
-		if (verticles[10] > targetY) verticles[10] = targetY;
+	if (positions[10] < targetY) {
+		positions[10] += moveSpeed;
+		if (positions[10] > targetY) positions[10] = targetY;
 	}
 
-	if (verticles[9] <= targetX && verticles[10] >= targetY) {
+	if (positions[9] <= targetX && positions[10] >= targetY) {
 		polygonType = PolygonType::RECTSHAPE;
 	}
 }
@@ -270,12 +257,12 @@ void PolygonShape::movingPentagon()
 {
 	float targetY = midpoint[1] + polygonDis * sin(PI / 2);
 
-	if (verticles[13] < targetY) {
-		verticles[13] += moveSpeed;
-		if (verticles[13] > targetY) verticles[13] = targetY;
+	if (positions[13] < targetY) {
+		positions[13] += moveSpeed;
+		if (positions[13] > targetY) positions[13] = targetY;
 	}
 
-	if (verticles[13] >= targetY) {
+	if (positions[13] >= targetY) {
 		polygonType = PolygonType::PENTAGON;
 	}
 }
@@ -285,48 +272,60 @@ void PolygonShape::movingLine()
 	float targetX = midpoint[0];
 	float targetY = midpoint[1];
 
-	if (verticles[6] > targetX) {
-		verticles[6] -= moveSpeed;
-		if (verticles[6] < targetX) verticles[6] = targetX;
+	if (positions[6] > targetX) {
+		positions[6] -= moveSpeed;
+		if (positions[6] < targetX) positions[6] = targetX;
 	}
 
-	if (verticles[7] < targetY) {
-		verticles[7] += moveSpeed;
-		if (verticles[7] > targetY) verticles[7] = targetY;
+	if (positions[7] < targetY) {
+		positions[7] += moveSpeed;
+		if (positions[7] > targetY) positions[7] = targetY;
 	}
 
-	if (verticles[9] < targetX) {
-		verticles[9] += moveSpeed;
-		if (verticles[9] > targetX) verticles[9] = targetX;
+	if (positions[9] < targetX) {
+		positions[9] += moveSpeed;
+		if (positions[9] > targetX) positions[9] = targetX;
 	}
 
-	if (verticles[10] > targetY) {
-		verticles[10] -= moveSpeed;
-		if (verticles[10] < targetY) verticles[10] = targetY;
+	if (positions[10] > targetY) {
+		positions[10] -= moveSpeed;
+		if (positions[10] < targetY) positions[10] = targetY;
 	}
 
-	if (verticles[13] > targetY) {
-		verticles[13] -= moveSpeed;
-		if (verticles[13] < targetY) polygonType = PolygonType::LINE;
+	if (positions[13] > targetY) {
+		positions[13] -= moveSpeed;
+		if (positions[13] < targetY) polygonType = PolygonType::LINE;
 	}
 }
 
 void PolygonShape::add(const float x, const float y)
 {
-	verticles.push_back(x);
-	verticles.push_back(y);
-	verticles.push_back(0.0f);
-
+	positions.push_back(x);
+	positions.push_back(y);
+	positions.push_back(0.0f);
+	float r = zeroToOne(gen);
+	float g = zeroToOne(gen);
+	float b = zeroToOne(gen);
+	std::cout << r << "," << g << "," << b << " 색 설정\n";
+	colors.push_back(r);
+	colors.push_back(g);
+	colors.push_back(b);
 	updateVbo();
 }
 
 void PolygonShape::add(const float x, const float y, const float z)
 {
-	std::cout << x << ", " << y << ", " << z <<" 추가\n";
-	verticles.push_back(x);
-	verticles.push_back(y);
-	verticles.push_back(z);
-
+	std::cout << x << ", " << y << ", " << z << " 추가\n";
+	positions.push_back(x);
+	positions.push_back(y);
+	positions.push_back(z);
+	float r = zeroToOne(gen);
+	float g = zeroToOne(gen);
+	float b = zeroToOne(gen);
+	std::cout << r << "," << g << "," << b << " 색 설정\n";
+	colors.push_back(r);
+	colors.push_back(g);
+	colors.push_back(b);
 	updateVbo();
 }
 
@@ -334,16 +333,9 @@ void PolygonShape::draw(GLuint shaderProgram) const
 {
 	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
-	GLint location = glGetUniformLocation(shaderProgram, "color");
-	if (location == -1)
-	{
-		std::cout << "location 못 찾음\n";
-	}
-	glUniform3f(location, 1.0f,0.0f,0.0f);
 
 	if (polygonType == PolygonType::LINE)
 	{
-		glUniform3f(location, colors[0], colors[1], colors[2]);
 		glDrawElements(GL_LINES, index.size(), GL_UNSIGNED_INT, 0);
 	}
 	else
@@ -351,7 +343,6 @@ void PolygonShape::draw(GLuint shaderProgram) const
 		for (int i = 0; i < 12; ++i) {
 			if (drawingIdx[i])
 			{
-				glUniform3f(location, colors[0 + (i * 3)], colors[1 + (i * 3)], colors[2 + (i * 3)]);
 				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
 			}
 		}
@@ -364,33 +355,33 @@ void PolygonShape::move(float x, float y)
 	//if (!canAnimation) return;
 	midpoint[0] += x;
 	midpoint[1] += y;
-	for (int i{}; i < static_cast<int>(verticles.size()); i += 3)
+	for (int i{}; i < static_cast<int>(positions.size()); i += 3)
 	{
-		verticles[i] += x;
-		verticles[i + 1] += y;
+		positions[i] += x;
+		positions[i + 1] += y;
 	}
-	
+
 	updateVbo();
 }
 
 int PolygonShape::isTouchedWall()
 {
-	if (verticles[1] > 1.0f || verticles[13] > 1.0f)
+	if (positions[1] > 1.0f || positions[13] > 1.0f)
 	{
 		move(0.0f, -moveSpeed);
 		return (int)WallDir::UP;
 	}
-	if (verticles[3] < -1.0f)
+	if (positions[3] < -1.0f)
 	{
 		move(moveSpeed, 0.0f);
 		return (int)WallDir::LEFT;
 	}
-	if (verticles[4] < -1.0f)
+	if (positions[4] < -1.0f)
 	{
 		move(0.0f, moveSpeed);
 		return (int)WallDir::DOWN;
 	}
-	if (verticles[0] > 1.0f)
+	if (positions[0] > 1.0f)
 	{
 		move(-moveSpeed, 0.0f);
 		return (int)WallDir::RIGHT;
@@ -409,9 +400,9 @@ bool PolygonShape::isCollide(PolygonShape*& other)
 	}
 	else if (polygonType == PolygonType::LINE)
 	{
-		float sx = verticles[0] - verticles[3];
-		float sy = verticles[1] - verticles[4];
-		float p[2]{ other->verticles[3],other->verticles[4] };
+		float sx = positions[0] - positions[3];
+		float sy = positions[1] - positions[4];
+		float p[2]{ other->positions[3],other->positions[4] };
 
 		for (int i{}; i < 20; ++i)
 		{
@@ -424,7 +415,7 @@ bool PolygonShape::isCollide(PolygonShape*& other)
 	else
 	{
 		// 느슨한 바운딩 구 검사로 함
-		if (sqrt(pow(x - other->midpoint[0], 2) + pow(y - other->midpoint[1], 2)) <= r )
+		if (sqrt(pow(x - other->midpoint[0], 2) + pow(y - other->midpoint[1], 2)) <= r)
 			return true;
 	}
 
@@ -447,63 +438,63 @@ bool PolygonShape::isCollide(PolygonShape*& other)
 //
 //	for (int i{}; i < 12; i += 3)
 //	{
-//		verticles[i] -= midpoint[0];
-//		verticles[i + 1] -= midpoint[1];
+//		positions[i] -= midpoint[0];
+//		positions[i + 1] -= midpoint[1];
 //	}
 //
-//	verticles[0] = moved * cos(PI/2 +offSlope);
-//	verticles[1] = moved * sin(PI / 2 + offSlope);
+//	positions[0] = moved * cos(PI/2 +offSlope);
+//	positions[1] = moved * sin(PI / 2 + offSlope);
 //
-//	verticles[3] = moved * cos(PI + offSlope);
-//	verticles[4] = moved * sin(PI + offSlope);
+//	positions[3] = moved * cos(PI + offSlope);
+//	positions[4] = moved * sin(PI + offSlope);
 //
-//	verticles[6] = moved * cos(3 * PI / 2 + offSlope);
-//	verticles[7] = moved * sin(3 * PI / 2 + offSlope);
+//	positions[6] = moved * cos(3 * PI / 2 + offSlope);
+//	positions[7] = moved * sin(3 * PI / 2 + offSlope);
 //
-//	verticles[9] = moved * cos(offSlope);
-//	verticles[10] = moved * sin(offSlope);
+//	positions[9] = moved * cos(offSlope);
+//	positions[10] = moved * sin(offSlope);
 //	
 //	for (int i{}; i < 12; i += 3)
 //	{
-//		verticles[i] += midpoint[0];
-//		verticles[i + 1] += midpoint[1];
+//		positions[i] += midpoint[0];
+//		positions[i + 1] += midpoint[1];
 //	}
 //
 //	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-//	glBufferData(GL_ARRAY_BUFFER, verticles.size() * sizeof(float), verticles.data(), GL_STATIC_DRAW);
+//	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(float), positions.data(), GL_STATIC_DRAW);
 //	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 //}
 //
 //void PolygonShape::moveRotate()
 //{
-//	for (int i{ 12 }; i < static_cast<int>(verticles.size()); i += 3)
+//	for (int i{ 12 }; i < static_cast<int>(positions.size()); i += 3)
 //	{
-//		verticles[i] -= midpoint[0];
-//		verticles[i + 1] -= midpoint[1];
+//		positions[i] -= midpoint[0];
+//		positions[i + 1] -= midpoint[1];
 //	}
 //
 //	float d = moved / ROOT2 / 2 + r/2;
-//	verticles[12] = d * cos(3 * PI / 4 + offSlope);
-//	verticles[13] = d * sin(3 * PI / 4 + offSlope);
+//	positions[12] = d * cos(3 * PI / 4 + offSlope);
+//	positions[13] = d * sin(3 * PI / 4 + offSlope);
 //
-//	verticles[15] = d * cos(PI / 4 + offSlope);
-//	verticles[16] = d * sin(PI / 4 + offSlope);
+//	positions[15] = d * cos(PI / 4 + offSlope);
+//	positions[16] = d * sin(PI / 4 + offSlope);
 //
-//	verticles[18] = d * cos(5 * PI / 4 + offSlope);
-//	verticles[19] = d * sin(5 * PI / 4 + offSlope);
+//	positions[18] = d * cos(5 * PI / 4 + offSlope);
+//	positions[19] = d * sin(5 * PI / 4 + offSlope);
 //
-//	verticles[21] = d * cos(7 * PI / 4 + offSlope);
-//	verticles[22] = d * sin(7 * PI / 4 + offSlope);
+//	positions[21] = d * cos(7 * PI / 4 + offSlope);
+//	positions[22] = d * sin(7 * PI / 4 + offSlope);
 //
-//	for (int i{ 12 }; i < static_cast<int>(verticles.size()); i += 3)
+//	for (int i{ 12 }; i < static_cast<int>(positions.size()); i += 3)
 //	{
-//		verticles[i] += midpoint[0];
-//		verticles[i + 1] += midpoint[1];
+//		positions[i] += midpoint[0];
+//		positions[i + 1] += midpoint[1];
 //	}
 //	offSlope += slope;
 //
 //	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-//	glBufferData(GL_ARRAY_BUFFER, verticles.size() * sizeof(float), verticles.data(), GL_STATIC_DRAW);
+//	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(float), positions.data(), GL_STATIC_DRAW);
 //	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 //}
 //
@@ -514,11 +505,11 @@ bool PolygonShape::isCollide(PolygonShape*& other)
 //	midpoint[1] = y;
 //	offSlope = 0.0f;
 //
-//	verticles.clear();
+//	positions.clear();
 //	setPaperFoldingShape();
 //
 //	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-//	glBufferData(GL_ARRAY_BUFFER, verticles.size() * sizeof(float), verticles.data(), GL_STATIC_DRAW);
+//	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(float), positions.data(), GL_STATIC_DRAW);
 //	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 //}
 //
@@ -561,90 +552,88 @@ bool PolygonShape::isCollide(PolygonShape*& other)
 
 void PolygonShape::changeType(PolygonType pType)
 {
-	if (verticles.size() > 15) return;
+	if (positions.size() > 15) return;
 	polygonType = pType;
 	// 하드코딩 가보자잇
 	if (pType == PolygonType::LINE)
 	{
-		verticles[0] = midpoint[0] + r * cos(PI / 4);
-		verticles[1] = midpoint[1] + r * sin(PI / 4);
+		positions[0] = midpoint[0] + r * cos(PI / 4);
+		positions[1] = midpoint[1] + r * sin(PI / 4);
 
-		verticles[3] = midpoint[0] + r * cos(5 * PI / 4);
-		verticles[4] = midpoint[1] + r * sin(5 * PI / 4);
+		positions[3] = midpoint[0] + r * cos(5 * PI / 4);
+		positions[4] = midpoint[1] + r * sin(5 * PI / 4);
 
-		verticles[6] = midpoint[0] + 0.001f;
-		verticles[7] = midpoint[1] - 0.001f;
+		positions[6] = midpoint[0] + 0.001f;
+		positions[7] = midpoint[1] - 0.001f;
 
-		verticles[9] = midpoint[0];
-		verticles[10] = midpoint[1];
+		positions[9] = midpoint[0];
+		positions[10] = midpoint[1];
 
-		verticles[12] = midpoint[0];
-		verticles[13] = midpoint[1];
+		positions[12] = midpoint[0];
+		positions[13] = midpoint[1];
 	}
 	else if (pType == PolygonType::TRIANGLE)
 	{
-		verticles[0] = midpoint[0] + r * cos(PI / 4);
-		verticles[1] = midpoint[1] + r * sin(PI / 4);
+		positions[0] = midpoint[0] + r * cos(PI / 4);
+		positions[1] = midpoint[1] + r * sin(PI / 4);
 
-		verticles[3] = midpoint[0] + r * cos(5 * PI / 4);
-		verticles[4] = midpoint[1] + r * sin(5 * PI / 4);
+		positions[3] = midpoint[0] + r * cos(5 * PI / 4);
+		positions[4] = midpoint[1] + r * sin(5 * PI / 4);
 
-		verticles[6] = midpoint[0] + r * cos(-PI / 4);
-		verticles[7] = midpoint[1] + r * sin(-PI / 4);
+		positions[6] = midpoint[0] + r * cos(-PI / 4);
+		positions[7] = midpoint[1] + r * sin(-PI / 4);
 
-		verticles[9] = midpoint[0];
-		verticles[10] = midpoint[1];
+		positions[9] = midpoint[0];
+		positions[10] = midpoint[1];
 
-		verticles[12] = midpoint[0];
-		verticles[13] = midpoint[1];
+		positions[12] = midpoint[0];
+		positions[13] = midpoint[1];
 	}
 	else if (pType == PolygonType::RECTSHAPE)
 	{
-		verticles[0] = midpoint[0] + r * cos(PI / 4);
-		verticles[1] = midpoint[1] + r * sin(PI / 4);
+		positions[0] = midpoint[0] + r * cos(PI / 4);
+		positions[1] = midpoint[1] + r * sin(PI / 4);
 
-		verticles[3] = midpoint[0] + r * cos(5 * PI / 4);
-		verticles[4] = midpoint[1] + r * sin(5 * PI / 4);
+		positions[3] = midpoint[0] + r * cos(5 * PI / 4);
+		positions[4] = midpoint[1] + r * sin(5 * PI / 4);
 
-		verticles[6] = midpoint[0] + r * cos(-PI / 4);
-		verticles[7] = midpoint[1] + r * sin(-PI / 4);
+		positions[6] = midpoint[0] + r * cos(-PI / 4);
+		positions[7] = midpoint[1] + r * sin(-PI / 4);
 
-		verticles[9] = midpoint[0] + r * cos(3 * PI / 4);
-		verticles[10] = midpoint[1] + r * sin(3 * PI / 4);
+		positions[9] = midpoint[0] + r * cos(3 * PI / 4);
+		positions[10] = midpoint[1] + r * sin(3 * PI / 4);
 
-		verticles[12] = midpoint[0];
-		verticles[13] = midpoint[1];
+		positions[12] = midpoint[0];
+		positions[13] = midpoint[1];
 	}
 	else if (pType == PolygonType::PENTAGON)
 	{
-		verticles[0] = midpoint[0] + r * cos(PI / 4);
-		verticles[1] = midpoint[1] + r * sin(PI / 4);
+		positions[0] = midpoint[0] + r * cos(PI / 4);
+		positions[1] = midpoint[1] + r * sin(PI / 4);
 
-		verticles[3] = midpoint[0] + r * cos(5 * PI / 4);
-		verticles[4] = midpoint[1] + r * sin(5 * PI / 4);
+		positions[3] = midpoint[0] + r * cos(5 * PI / 4);
+		positions[4] = midpoint[1] + r * sin(5 * PI / 4);
 
-		verticles[6] = midpoint[0] + r * cos(-PI / 4);
-		verticles[7] = midpoint[1] + r * sin(-PI / 4);
+		positions[6] = midpoint[0] + r * cos(-PI / 4);
+		positions[7] = midpoint[1] + r * sin(-PI / 4);
 
-		verticles[9] = midpoint[0] + r * cos(3 * PI / 4);
-		verticles[10] = midpoint[1] + r * sin(3 * PI / 4);
+		positions[9] = midpoint[0] + r * cos(3 * PI / 4);
+		positions[10] = midpoint[1] + r * sin(3 * PI / 4);
 
-		verticles[12] = midpoint[0] + r * cos(PI / 2);
-		verticles[13] = midpoint[1] + r * sin(PI / 2);
+		positions[12] = midpoint[0] + r * cos(PI / 2);
+		positions[13] = midpoint[1] + r * sin(PI / 2);
 
 	}
 	else if (pType == PolygonType::POINTTYPE)
 	{
 		for (int i{}; i < 15; i += 3)
 		{
-			verticles[i] = midpoint[0];
-			verticles[i + 1] = midpoint[1];
+			positions[i] = midpoint[0];
+			positions[i + 1] = midpoint[1];
 		}
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, verticles.size() * sizeof(float), verticles.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	updateVbo();
 }
 
 bool PolygonShape::isMouseInside(float x, float y) const
@@ -656,9 +645,9 @@ bool PolygonShape::isMouseInside(float x, float y) const
 	}
 	else if (polygonType == PolygonType::LINE)
 	{
-		float sx = verticles[0] - verticles[3];
-		float sy = verticles[1] - verticles[4];
-		float p[2]{ verticles[3],verticles[4] };
+		float sx = positions[0] - positions[3];
+		float sy = positions[1] - positions[4];
+		float p[2]{ positions[3],positions[4] };
 
 		for (int i{}; i < 20; ++i)
 		{
@@ -671,7 +660,7 @@ bool PolygonShape::isMouseInside(float x, float y) const
 	else if (polygonType == PolygonType::TRIANGLE)
 	{
 		// 느슨한 바운딩 구 검사로 함
-		if (sqrt(pow(x - midpoint[0], 2) + pow(y - midpoint[1], 2)) <= r) 
+		if (sqrt(pow(x - midpoint[0], 2) + pow(y - midpoint[1], 2)) <= r)
 			return true;
 	}
 	else if (polygonType == PolygonType::RECTSHAPE)

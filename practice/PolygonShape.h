@@ -19,10 +19,11 @@ enum PolygonType
 
 class PolygonShape : public ShapeManager
 {
-    GLuint vao, vbo, ebo;
-    std::vector<float> verticles;
+    GLuint vao, vboPos, vboColor, ebo;
+    std::vector<GLfloat> positions;
+    std::vector<GLfloat> colors;
     std::vector<unsigned int> index;
-    GLfloat colors[36];
+
 
     // 실습 15용 변수
     bool drawingIdx[12]{}; // true인 면만 그리는 용
@@ -51,7 +52,6 @@ public:
     ~PolygonShape();
 
     void updateVbo();
-    void initColor();
 
     void setColor(const float r, const float g, const float b);
     void setPaperFoldingShape(); // 실습 14용 삼각형으로 세팅
@@ -60,7 +60,7 @@ public:
     // 실습 15용 함수
     void drawAll() { std::fill(drawingIdx, drawingIdx + 12, true); }
     void drawNone() { std::fill(drawingIdx, drawingIdx + 12, false); }
-    void drawSomething(int n) { drawingIdx[n * 2] = true; drawingIdx[n * 2 + 1] = true;}
+    void drawSomething(int n) { drawingIdx[n * 2] = true; drawingIdx[n * 2 + 1] = true; }
 
     void moveAccept() { isMoving = true; }
     void moveDecline() { isMoving = false; }
