@@ -6,6 +6,10 @@
 #pragma once
 #include <random>
 #include <vector>
+#include <gl/glm/glm.hpp>
+#include <gl/glm/ext.hpp>
+#include <gl/glm/gtc/matrix_transform.hpp>
+#include <gl/glm/gtc/type_ptr.hpp> // glm::value_ptr
 
 extern std::random_device rd;
 extern std::mt19937 gen;

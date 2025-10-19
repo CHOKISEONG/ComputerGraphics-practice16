@@ -2,12 +2,12 @@
 
 PolygonShape::PolygonShape() // 기본은 정육각형
 {
-	index = { 0,1,3,1,2,3,
-			1,5,2,5,6,2,
-			0,4,5,0,5,1,
-			5,4,7,5,7,6,
-			0,7,4,0,3,7,
-			2,6,7,2,7,3 };
+	index = { 0,1,2, 2,3,0,   
+			  4,5,6, 6,7,4,  
+			  4,5,1, 1,0,4,   
+			  7,6,2, 2,3,7,   
+			  4,0,3, 3,7,4,   
+			  5,1,2, 2,6,5 };
 	slope = 0.0f;
 	r = 1.0f;
 	polygonType = PolygonType::POLYGON;
@@ -82,8 +82,6 @@ PolygonShape::PolygonShape(const PolygonShape& other)
 	, positions(other.positions) // std::vector는 깊은 복사됨
 	, index(other.index)
 	, isMoving(other.isMoving)
-	, canAnimation(other.canAnimation)
-	, animType(other.animType)
 	, moveSpeed(other.moveSpeed)
 	, slope(other.slope)
 	, distance(other.distance)
@@ -148,7 +146,7 @@ void PolygonShape::setColor(const float r, const float g, const float b)
 
 void PolygonShape::setRegularHexagon()
 {
-	float d = 0.5f;
+	float d = 0.3f;
 	add(d, d, d);
 	add(-d, d, d);
 	add(-d, -d, d);
@@ -160,15 +158,52 @@ void PolygonShape::setRegularHexagon()
 	add(d, -d, -d);
 }
 
-void PolygonShape::changeAnimType()
+void PolygonShape::rotate()
 {
-	if (canAnimation)
+	glm::vec3 pivot = glm::vec3(midpoint[0], midpoint[1], 0.0f);
+	glm::mat4 rotMatrix(1.0f);
+	
+	if (rotateDir == 1) // x축기준 양
 	{
-		if (animType == 0)
-			animType = zeroOrOne(gen) + 1;
-		else
-			animType = 0;
+		rotMatrix = glm::translate(rotMatrix, pivot);
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(moveSpeed), glm::vec3(1.0f, 0.0f, 0.0f));
+		rotMatrix = glm::translate(rotMatrix, -pivot);
 	}
+	else if (rotateDir == 2) // x축기준 음
+	{
+		rotMatrix = glm::translate(rotMatrix, pivot);
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(-moveSpeed), glm::vec3(1.0f, 0.0f, 0.0f));
+		rotMatrix = glm::translate(rotMatrix, -pivot);
+	}
+	else if (rotateDir == 3) // y축기준 양
+	{
+		rotMatrix = glm::translate(rotMatrix, pivot);
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(moveSpeed), glm::vec3(0.0f, 1.0f, 0.0f));
+		rotMatrix = glm::translate(rotMatrix, -pivot);
+	}
+	else if (rotateDir == 4) // y축기준 음
+	{
+		rotMatrix = glm::translate(rotMatrix, pivot);
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(-moveSpeed), glm::vec3(0.0f, 1.0f, 0.0f));
+		rotMatrix = glm::translate(rotMatrix, -pivot);
+	}
+
+	for (size_t i = 0; i < positions.size() / 3; ++i)
+	{
+		glm::vec4 tmp(
+			positions[i * 3 + 0],
+			positions[i * 3 + 1],
+			positions[i * 3 + 2],
+			1.0f
+		);
+
+		tmp = rotMatrix * tmp;
+
+		positions[i * 3 + 0] = tmp.x;
+		positions[i * 3 + 1] = tmp.y;
+		positions[i * 3 + 2] = tmp.z;
+	}
+	updateVbo();
 }
 
 void PolygonShape::setMidpoint(const float x, const float y)
@@ -222,7 +257,18 @@ void PolygonShape::draw(GLuint shaderProgram) const
 		for (int i = 0; i < 12; ++i) {
 			if (drawingIdx[i])
 			{
-				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
+				if (drawType == 1)
+				{
+					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
+				}
+				if (drawType == 2)
+				{
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+					glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
+					//glDrawElements(GL_LINES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
+				}
+					
 			}
 		}
 	}

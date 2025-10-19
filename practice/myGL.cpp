@@ -13,7 +13,9 @@ MyGL* MyGL::my = nullptr;
 /// </summary>
 /// 좌클릭 - 정육면체 그리기, 우클릭 - 사각뿔그리기
 PolygonShape* cube;
-PolygonShape* squarePyramid;
+PolygonShape* pyramid;
+std::vector<float> orgCubePos;
+std::vector<float> orgPyramidPos;
 std::vector<PolygonShape*> lines;
 bool isBackFaceCulling = false;
 char trigger;
@@ -26,7 +28,14 @@ void MyGL::reShape(int w, int h)
 }
 void MyGL::idle()
 {
-	
+	if (cube->getIsMoving())
+	{
+		cube->rotate();
+	}
+	if (pyramid->getIsMoving())
+	{
+		pyramid->rotate();
+	}
 	glutPostRedisplay();
 }
 
@@ -36,10 +45,16 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case'c':
-		// 육면체 띄우기
+		cube->drawAll();
+		pyramid->drawNone();
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
 		break;
 	case'p':
-		// 사각뿔 띄우기
+		pyramid->drawAll();
+		cube->drawNone();
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
 		break;
 	case'h':
 		// 은면제거 적용/해제
@@ -56,26 +71,46 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		}
 		break;
 	case'w':
-		break;
-	case'W':
-		break;
-	case'x':
-		break;
-	case'X':
-		break;
-	case'y':
-		break;
-	case'Y':
-		break;
-	case's':
-		break;
-	case 't':
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
-		cube->drawNone();
-		squarePyramid->drawNone();
-		squarePyramid->drawSomething(uid(gen) % 4);
-		squarePyramid->drawSomething(4);
+		cube->setDrawType(2);
+		pyramid->setDrawType(2);
+		break;
+	case'W':
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
+		cube->setDrawType(1);
+		pyramid->setDrawType(1);
+		break;
+	case'x':
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
+		cube->setRotateDir(1);
+		pyramid->setRotateDir(1);
+		break;
+	case'X':
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
+		cube->setRotateDir(2);
+		pyramid->setRotateDir(2);
+		break;
+	case'y':
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
+		cube->setRotateDir(3);
+		pyramid->setRotateDir(3);
+		break;
+	case'Y':
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
+		cube->setRotateDir(4);
+		pyramid->setRotateDir(4);
+		break;
+	case's':
+		cube->setPos(orgCubePos);
+		cube->moveDecline();
+		pyramid->setPos(orgPyramidPos);
+		pyramid->moveDecline();
 		break;
 	case 'q':
 		exit(0);
@@ -90,19 +125,19 @@ void MyGL::specialKeyboard(int key, int x, int y)
 	{
 	case GLUT_KEY_UP:
 		cube->move(0.0f, 0.05f);
-		squarePyramid->move(0.0f, 0.05f);
+		pyramid->move(0.0f, 0.05f);
 		break;
 	case GLUT_KEY_DOWN:
 		cube->move(0.0f, -0.05f);
-		squarePyramid->move(0.0f, -0.05f);
+		pyramid->move(0.0f, -0.05f);
 		break;
 	case GLUT_KEY_LEFT:
 		cube->move(-0.05f, 0.0f);
-		squarePyramid->move(-0.05f, 0.0f);
+		pyramid->move(-0.05f, 0.0f);
 		break;
 	case GLUT_KEY_RIGHT:
 		cube->move(0.05f, 0.0f);
-		squarePyramid->move(0.05f, 0.0f);
+		pyramid->move(0.05f, 0.0f);
 		break;
 	}
 	glutPostRedisplay();
@@ -112,20 +147,7 @@ void MyGL::mouse(int button, int state, int x, int y)
 	float crx = (2.0f * x - my->width) / my->width;
 	float cry = -(2.0f * y - my->height) / my->height;
 
-	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
-	{
-		cube->drawAll();
-		squarePyramid->drawNone();
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-	}
-	else if (state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON)
-	{
-		squarePyramid->drawAll();
-		cube->drawNone();
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-	}
+	
 
 	glutPostRedisplay();
 }
@@ -135,7 +157,6 @@ void MyGL::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(my->shaderProgramID);
 
-	
 	glm::mat4 model = glm::mat4(1.0f);
 	// x축 30도, y축 -30도 회전해서 그리기
 	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
@@ -146,7 +167,7 @@ void MyGL::draw()
 	for (const auto& l : lines)
 		l->draw(my->shaderProgramID);
 	cube->draw(my->shaderProgramID);
-	squarePyramid->draw(my->shaderProgramID);
+	pyramid->draw(my->shaderProgramID);
 	
 	glutSwapBuffers();
 }
@@ -198,16 +219,17 @@ void MyGL::run(int argc, char** argv)
 	lines[2]->setColor(0.0f, 0.0f, 1.0f);
 
 	cube = new PolygonShape();
-
+	cube->drawNone();
+	orgCubePos = cube->getPos();
+	
 	float sp[15]{ 0.0f,0.5f,0.0f
 			,0.2f,-0.2f,0.2f
 			,-0.2f,-0.2f,0.2f
 			,-0.2f,-0.2f,-0.2f
 			,0.2f,-0.2f,-0.2f };
-	squarePyramid = new PolygonShape(PolygonType::SQUAREPYRAMID, sp);
-	squarePyramid->drawNone();
-
-	
+	pyramid = new PolygonShape(PolygonType::SQUAREPYRAMID, sp);
+	pyramid->drawNone();
+	orgPyramidPos = pyramid->getPos();
 
 	glutDisplayFunc(MyGL::draw);
 	glutReshapeFunc(MyGL::reShape);
