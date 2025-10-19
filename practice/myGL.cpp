@@ -15,6 +15,7 @@ MyGL* MyGL::my = nullptr;
 /// 그려질 도형들을 모아놓는 변수
 /// </summary>
 /// 좌클릭 - 정육면체 그리기, 우클릭 - 사각뿔그리기
+/// hi
 PolygonShape* cube;
 PolygonShape* squarePyramid;
 std::vector<PolygonShape*> lines;
