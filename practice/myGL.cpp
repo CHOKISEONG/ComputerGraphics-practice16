@@ -15,6 +15,7 @@ MyGL* MyGL::my = nullptr;
 PolygonShape* cube;
 PolygonShape* squarePyramid;
 std::vector<PolygonShape*> lines;
+bool isBackFaceCulling = false;
 char trigger;
 
 void MyGL::reShape(int w, int h)
@@ -25,50 +26,48 @@ void MyGL::reShape(int w, int h)
 }
 void MyGL::idle()
 {
-
+	
 	glutPostRedisplay();
 }
+
 void MyGL::keyboard(unsigned char key, int x, int y)
 {
 	trigger = key;
 	switch (key)
 	{
-	case '1':case '2':case '3':
-	case '4':case '5':case '6':
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
-		squarePyramid->drawNone();
-		cube->drawNone();
-		cube->drawSomething(static_cast<int>(key - '1'));
+	case'c':
+		// 육면체 띄우기
 		break;
-	case 'c':
-		int randIdx[2];
-		do
+	case'p':
+		// 사각뿔 띄우기
+		break;
+	case'h':
+		// 은면제거 적용/해제
+		isBackFaceCulling = !isBackFaceCulling;
+		if (isBackFaceCulling)
 		{
-			randIdx[0] = uid(gen) % 6;
-			randIdx[1] = uid(gen) % 6;
-		} while (randIdx[0] == randIdx[1]);
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
-		squarePyramid->drawNone();
-		cube->drawNone();
-		cube->drawSomething(randIdx[0]);
-		cube->drawSomething(randIdx[1]);
+			glEnable(GL_CULL_FACE);
+			glEnable(GL_DEPTH_TEST);
+		}
+		else
+		{
+			glDisable(GL_CULL_FACE);
+			glDisable(GL_DEPTH_TEST);
+		}
 		break;
-	case '7':case '8':
-	case '9':
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
-		cube->drawNone();
-		squarePyramid->drawNone();
-		squarePyramid->drawSomething(static_cast<int>(key - '7'));
+	case'w':
 		break;
-	case '0':
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
-		cube->drawNone();
-		squarePyramid->drawNone();
-		squarePyramid->drawSomething(3);
+	case'W':
+		break;
+	case'x':
+		break;
+	case'X':
+		break;
+	case'y':
+		break;
+	case'Y':
+		break;
+	case's':
 		break;
 	case 't':
 		glDisable(GL_CULL_FACE);
@@ -85,28 +84,28 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 
 	glutPostRedisplay();
 }
-
-void MyGL::draw()
+void MyGL::specialKeyboard(int key, int x, int y)
 {
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUseProgram(my->shaderProgramID);
-
-	static float tmp = 0.0f;
-	tmp += 0.1f;
-	// x축 30도, y축 -30도 회전해서 그리기
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
-	model = glm::rotate(model, glm::radians(tmp), glm::vec3(0.0, 1.0, 0.0)); // y는 반대로
-	unsigned int modelLocation = glGetUniformLocation(my->shaderProgramID, "modelTransform");
-	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-
-	for (const auto& l : lines)
-		l->draw(my->shaderProgramID);
-	cube->draw(my->shaderProgramID);
-	squarePyramid->draw(my->shaderProgramID);
-
-	glutSwapBuffers();
+	switch (key)
+	{
+	case GLUT_KEY_UP:
+		cube->move(0.0f, 0.05f);
+		squarePyramid->move(0.0f, 0.05f);
+		break;
+	case GLUT_KEY_DOWN:
+		cube->move(0.0f, -0.05f);
+		squarePyramid->move(0.0f, -0.05f);
+		break;
+	case GLUT_KEY_LEFT:
+		cube->move(-0.05f, 0.0f);
+		squarePyramid->move(-0.05f, 0.0f);
+		break;
+	case GLUT_KEY_RIGHT:
+		cube->move(0.05f, 0.0f);
+		squarePyramid->move(0.05f, 0.0f);
+		break;
+	}
+	glutPostRedisplay();
 }
 void MyGL::mouse(int button, int state, int x, int y)
 {
@@ -129,6 +128,27 @@ void MyGL::mouse(int button, int state, int x, int y)
 	}
 
 	glutPostRedisplay();
+}
+void MyGL::draw()
+{
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glUseProgram(my->shaderProgramID);
+
+	
+	glm::mat4 model = glm::mat4(1.0f);
+	// x축 30도, y축 -30도 회전해서 그리기
+	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
+	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0, 1.0, 0.0));
+	unsigned int modelLocation = glGetUniformLocation(my->shaderProgramID, "model_transform");
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+
+	for (const auto& l : lines)
+		l->draw(my->shaderProgramID);
+	cube->draw(my->shaderProgramID);
+	squarePyramid->draw(my->shaderProgramID);
+	
+	glutSwapBuffers();
 }
 
 void MyGL::passiveMotion(int x, int y)
@@ -154,7 +174,7 @@ void MyGL::run(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(my->width, my->height);
-	glutCreateWindow("openGL practice 13");
+	glutCreateWindow("openGL practice 16");
 
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK)
@@ -167,9 +187,9 @@ void MyGL::run(int argc, char** argv)
 
 	make_shaderProgram();
 
-	float xLine[6]{ -1000.0f, 0.0f, 0.0f, 1000.0f, 0.0f, 0.0f };
-	float yLine[6]{ 0.0f, -1000.0f, 0.0f, 0.0f, 1000.0f, 0.0f };
-	float zLine[6]{ 0.0f, 0.0f, -1000.0f, 0.0f, 0.0f, 1000.0f };
+	float xLine[6]{ -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f };
+	float yLine[6]{ 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
+	float zLine[6]{ 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f };
 	lines.push_back(new PolygonShape(PolygonType::LINE, xLine));
 	lines.push_back(new PolygonShape(PolygonType::LINE, yLine));
 	lines.push_back(new PolygonShape(PolygonType::LINE, zLine));
@@ -185,12 +205,9 @@ void MyGL::run(int argc, char** argv)
 			,-0.2f,-0.2f,-0.2f
 			,0.2f,-0.2f,-0.2f };
 	squarePyramid = new PolygonShape(PolygonType::SQUAREPYRAMID, sp);
-
-	cube->drawNone();
 	squarePyramid->drawNone();
 
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
+	
 
 	glutDisplayFunc(MyGL::draw);
 	glutReshapeFunc(MyGL::reShape);
@@ -198,6 +215,7 @@ void MyGL::run(int argc, char** argv)
 	//glutMotionFunc(MyGL::motion);
 	//glutPassiveMotionFunc(MyGL::passiveMotion);
 	glutKeyboardFunc(MyGL::keyboard);
+	glutSpecialFunc(MyGL::specialKeyboard);
 	glutIdleFunc(MyGL::idle);
 	glutMainLoop();
 }
@@ -234,6 +252,8 @@ void MyGL::make_vertexShaders()
 		std::cerr << "ERROR: vertex shader 컴파일 실패\n" << errorLog << std::endl;
 		return;
 	}
+	else
+		std::cout << "vertex shader 컴파일 성공\n";
 }
 void MyGL::make_fragmentShaders()
 {
@@ -252,6 +272,8 @@ void MyGL::make_fragmentShaders()
 		std::cerr << "ERROR: frag_shader 컴파일 실패\n" << errorLog << std::endl;
 		return;
 	}
+	else
+		std::cout << "fragment shader 컴파일 성공\n";
 }
 char* MyGL::filetobuf(const char* file)
 {

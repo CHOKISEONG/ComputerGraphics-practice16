@@ -19,11 +19,10 @@ enum PolygonType
 
 class PolygonShape : public ShapeManager
 {
-    GLuint vao, vboPos, vboColor, ebo;
+    GLuint vao = 0, vbo[2] = {0,0}, ebo = 0;
     std::vector<GLfloat> positions;
     std::vector<GLfloat> colors;
     std::vector<unsigned int> index;
-
 
     // 실습 15용 변수
     bool drawingIdx[12]{}; // true인 면만 그리는 용
@@ -54,7 +53,6 @@ public:
     void updateVbo();
 
     void setColor(const float r, const float g, const float b);
-    void setPaperFoldingShape(); // 실습 14용 삼각형으로 세팅
     void setRegularHexagon();
 
     // 실습 15용 함수
@@ -73,31 +71,9 @@ public:
     void setMidpoint(const float x, const float y);
     unsigned short getPolytonType() { return polygonType; };
     void initBuffer();
-    void initialSetting(PolygonType type);
 
-    void moving();
-    void movingTriangle();
-    void movingRectangle();
-    void movingPentagon();
-    void movingLine();
-
-    int isTouchedWall();
-    bool isCollide(PolygonShape*& other);
-
-    //// 실습 14용 함수
-    //void movePaperFolding();
-    //void moveRotate();
-    //void teleport(float x, float y);
-
-    //// 실습 13용 함수
-    //void moveAnimation();
-    //void moveSpring();
-    //void moveZigZag();
-
-    void changeType(PolygonType pType);
     void add(const float x, const float y);
     void add(const float x, const float y, const float z);
-
 
     virtual void draw(GLuint shaderProgram) const override;
     virtual void move(float x, float y) override;

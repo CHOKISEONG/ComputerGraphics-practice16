@@ -38,6 +38,7 @@ public:
 	static void idle();
 	static void mouse(int button, int state, int x, int y);
 	static void keyboard(unsigned char key, int x, int y);
+	static void specialKeyboard(int key, int x, int y);
 	
 
 	void run(int argc, char** argv);
