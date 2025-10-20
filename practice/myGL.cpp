@@ -219,7 +219,7 @@ void MyGL::run(int argc, char** argv)
 	lines[2]->setColor(0.0f, 0.0f, 1.0f);
 
 	cube = new PolygonShape();
-	cube->drawNone();
+	//cube->drawNone();
 	orgCubePos = cube->getPos();
 	
 	float sp[15]{ 0.0f,0.5f,0.0f
@@ -228,7 +228,7 @@ void MyGL::run(int argc, char** argv)
 			,-0.2f,-0.2f,-0.2f
 			,0.2f,-0.2f,-0.2f };
 	pyramid = new PolygonShape(PolygonType::SQUAREPYRAMID, sp);
-	pyramid->drawNone();
+	//pyramid->drawNone();
 	orgPyramidPos = pyramid->getPos();
 
 	glutDisplayFunc(MyGL::draw);

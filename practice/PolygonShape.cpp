@@ -272,9 +272,7 @@ void PolygonShape::draw(GLuint shaderProgram) const
 				{
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 					glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
-					//glDrawElements(GL_LINES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
 				}
-					
 			}
 		}
 	}
