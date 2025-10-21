@@ -31,6 +31,7 @@ class PolygonShape : public ShapeManager
     int drawType = 1;
     float moveSpeed = 0.5f;
     bool isMoving = false;
+    bool isRotating = false;
     int rotateDir = 4;
 
     float slope = 0.0f; // 이동할 기울기
@@ -40,6 +41,8 @@ class PolygonShape : public ShapeManager
     float moved = 0.0f; // 얼마나 이동했는지
     float r;
 
+    int rotateType = 0;
+    int shapeNum = -1;
 public:
     PolygonShape();
     PolygonShape(PolygonType type, const float* f);
@@ -54,6 +57,8 @@ public:
     void setRegularHexagon();
     void setRotateDir(int n) { rotateDir = n; isMoving = true; }
     void setPos(std::vector<float> p) { positions = p; updateVbo(); }
+    void setShapeNum(int n) { shapeNum = n; }
+    void initMoved() { moved = 0.0f; }
 
     std::vector<float> getPos() const { return positions; }
 
@@ -70,6 +75,22 @@ public:
     void setMidpoint(const float x, const float y);
     unsigned short getPolytonType() { return polygonType; };
     void initBuffer();
+
+    /// <summary> e동 컴
+    /// 실습 17용 함수
+    /// </summary>
+    void rotateDecline() { isRotating = false; rotateType = 0; }
+    void rotateAccept() { isRotating = true; }
+    bool getIsRotating() { return isRotating; }
+    void setRotateType(int n) { rotateType = n; }
+    int getRotateType() { return rotateType; }
+    void rotate2();
+    void rotateT();
+    void rotateF();
+    void rotateS();
+    void zoomInOut();
+    void rotateO();
+    void rotateR(int n);
 
     void add(const float x, const float y);
     void add(const float x, const float y, const float z);

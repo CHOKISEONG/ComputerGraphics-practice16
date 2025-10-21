@@ -27,6 +27,7 @@ PolygonShape::PolygonShape() // 기본은 정육각형
 
 PolygonShape::PolygonShape(PolygonType type, const float* f)
 {
+	std::fill(drawingIdx, drawingIdx + 12, true);
 	slope = 0.0f;
 	r = 1.0f;
 	if (type == PolygonType::LINE)
@@ -130,6 +131,7 @@ void PolygonShape::initBuffer() {
 
 	glBindVertexArray(0);
 }
+
 void PolygonShape::updateVbo()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
@@ -220,6 +222,293 @@ void PolygonShape::setMidpoint(const float x, const float y)
 	updateVbo();
 }
 
+void PolygonShape::rotate2()
+{
+	if (rotateType == 0) return;
+	else if (rotateType == 1) rotateT();
+	else if (rotateType == 2) rotateF();
+	else if (rotateType == 3) rotateS();
+	else if (rotateType == 4) zoomInOut();
+	else if (rotateType == 5) rotateO();
+}
+
+void PolygonShape::rotateT()
+{
+	glm::vec3 pivot(0.0f, 0.3f, 0.0f);
+
+	for (size_t i = 0; i < positions.size() / 3; ++i)
+	{
+		glm::vec4 tmp(
+			positions[i * 3 + 0],
+			positions[i * 3 + 1],
+			positions[i * 3 + 2],
+			1.0f
+		);
+		glm::mat4 rotMatrix(1.0f);
+
+		rotMatrix = glm::translate(rotMatrix, -pivot);
+		tmp = rotMatrix * tmp;
+
+		rotMatrix = glm::mat4(1.0f);
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(moveSpeed), glm::vec3(0.0f, 0.0f, 1.0f));
+		tmp = rotMatrix * tmp;
+
+		rotMatrix = glm::mat4(1.0f);
+		rotMatrix = glm::translate(rotMatrix, pivot);
+		tmp = rotMatrix * tmp;
+
+		positions[i * 3 + 0] = tmp.x;
+		positions[i * 3 + 1] = tmp.y;
+		positions[i * 3 + 2] = tmp.z;
+	}
+
+	updateVbo();
+}
+
+void PolygonShape::rotateF()
+{
+	glm::vec3 pivot(0.0f, 0.3f, 0.3f);
+
+	for (size_t i = 0; i < positions.size() / 3; ++i)
+	{
+		glm::vec4 tmp(
+			positions[i * 3 + 0],
+			positions[i * 3 + 1],
+			positions[i * 3 + 2],
+			1.0f
+		);
+		glm::mat4 rotMatrix(1.0f);
+
+		rotMatrix = glm::translate(rotMatrix, -pivot);
+		tmp = rotMatrix * tmp;
+
+		rotMatrix = glm::mat4(1.0f);
+		std::cout << moveSpeed << "\n";
+		moved += moveSpeed;
+		if (moved > 150 * PI)
+		{
+			moveSpeed = -moveSpeed;
+			moved = 150 * PI;
+		}
+		if (moved < 0.0f)
+		{
+			moveSpeed = -moveSpeed;
+			moved = 0.0f;
+		}
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(-moveSpeed), glm::vec3(1.0f, 0.0f, 0.0f));
+		tmp = rotMatrix * tmp;
+
+		rotMatrix = glm::mat4(1.0f);
+		rotMatrix = glm::translate(rotMatrix, pivot);
+		tmp = rotMatrix * tmp;
+
+		positions[i * 3 + 0] = tmp.x;
+		positions[i * 3 + 1] = tmp.y;
+		positions[i * 3 + 2] = tmp.z;
+	}
+
+	updateVbo();
+}
+
+void PolygonShape::rotateS()
+{
+	for (size_t i = 0; i < positions.size() / 3; ++i)
+	{
+		glm::vec4 tmp(
+			positions[i * 3 + 0],
+			positions[i * 3 + 1],
+			positions[i * 3 + 2],
+			1.0f
+		);
+		glm::mat4 rotMatrix(1.0f);
+
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(-moveSpeed), glm::vec3(1.0f, 0.0f, 0.0f));
+		tmp = rotMatrix * tmp;
+
+		positions[i * 3 + 0] = tmp.x;
+		positions[i * 3 + 1] = tmp.y;
+		positions[i * 3 + 2] = tmp.z;
+	}
+
+	updateVbo();
+}
+
+void PolygonShape::zoomInOut()
+{
+	glm::vec3 pivot(0.0f, 0.0f, -0.3f);
+
+	for (size_t i = 0; i < positions.size() / 3; ++i)
+	{
+		glm::vec4 tmp(
+			positions[i * 3 + 0],
+			positions[i * 3 + 1],
+			positions[i * 3 + 2],
+			1.0f
+		);
+		glm::mat4 rotMatrix(1.0f);
+
+		rotMatrix = glm::translate(rotMatrix, -pivot);
+		tmp = rotMatrix * tmp;
+
+		rotMatrix = glm::mat4(1.0f);
+		std::cout << moveSpeed << "\n";
+		moved += moveSpeed;
+		if (moved > 200 * PI)
+		{
+			moveSpeed = -moveSpeed;
+			moved = 200 * PI;
+		}
+		if (moved < 0.0f)
+		{
+			moveSpeed = -moveSpeed;
+			moved = 0.0f;
+		}
+		rotMatrix = glm::scale(rotMatrix, glm::vec3(1.0f - moveSpeed/50, 1.0f - moveSpeed / 50, 0.0f));
+		tmp = rotMatrix * tmp;
+
+		rotMatrix = glm::mat4(1.0f);
+		rotMatrix = glm::translate(rotMatrix, pivot);
+		tmp = rotMatrix * tmp;
+
+		positions[i * 3 + 0] = tmp.x;
+		positions[i * 3 + 1] = tmp.y;
+		positions[i * 3 + 2] = tmp.z;
+	}
+
+	updateVbo();
+}
+
+void PolygonShape::rotateO()
+{ 
+	glm::vec3 pivot;
+	glm::vec3 axis;
+
+	if (shapeNum == 0)
+	{
+		pivot = glm::vec3(0.2f, 0.0f, 0.0f);
+		axis = glm::vec3(0.0f, 0.0f, -1.0f);
+	}
+	else if (shapeNum == 1)
+	{
+		pivot = glm::vec3(0.0f, 0.0f, -0.2f);
+		axis = glm::vec3(-1.0f, 0.0f, 0.0f);
+	}
+	else if (shapeNum == 2)
+	{
+		pivot = glm::vec3(-0.2f, 0.0f, 0.0f);
+		axis = glm::vec3(0.0f, 0.0f, 1.0f);
+	}
+	else if (shapeNum == 3)
+	{
+		pivot = glm::vec3(0.0f, 0.0f, 0.2f);
+		axis = glm::vec3(1.0f, 0.0f, 0.0f);
+	}
+
+	glm::vec4 tmp(
+		positions[0],
+		positions[1],
+		positions[2],
+		1.0f
+	);
+	glm::mat4 rotMatrix(1.0f);
+
+	rotMatrix = glm::translate(rotMatrix, -pivot);
+	tmp = rotMatrix * tmp;
+
+	rotMatrix = glm::mat4(1.0f);
+	std::cout << moveSpeed << "\n";
+	moved += moveSpeed;
+	if (moved > 70 * PI)
+	{
+		moveSpeed = -moveSpeed;
+		moved = 70 * PI;
+	}
+	if (moved < 0.0f)
+	{
+		moveSpeed = -moveSpeed;
+		moved = 0.0f;
+	}
+
+	rotMatrix = glm::rotate(rotMatrix, glm::radians(moveSpeed), axis);
+	tmp = rotMatrix * tmp;
+
+	rotMatrix = glm::mat4(1.0f);
+	rotMatrix = glm::translate(rotMatrix, pivot);
+	tmp = rotMatrix * tmp;
+
+	positions[0] = tmp.x;
+	positions[1] = tmp.y;
+	positions[2] = tmp.z;
+
+	updateVbo();
+}
+
+void PolygonShape::rotateR(int n)
+{
+
+	glm::vec3 pivot;
+	glm::vec3 axis;
+
+	if (n == 0)
+	{
+		pivot = glm::vec3(0.2f, 0.0f, 0.0f);
+		axis = glm::vec3(0.0f, 0.0f, -1.0f);
+	}
+	else if (n == 1)
+	{
+		pivot = glm::vec3(0.0f, 0.0f, -0.2f);
+		axis = glm::vec3(-1.0f, 0.0f, 0.0f);
+	}
+	else if (n == 2)
+	{
+		pivot = glm::vec3(-0.2f, 0.0f, 0.0f);
+		axis = glm::vec3(0.0f, 0.0f, 1.0f);
+	}
+	else if (n == 3)
+	{
+		pivot = glm::vec3(0.0f, 0.0f, 0.2f);
+		axis = glm::vec3(1.0f, 0.0f, 0.0f);
+	}
+
+	glm::vec4 tmp(
+		positions[0],
+		positions[1],
+		positions[2],
+		1.0f
+	);
+	glm::mat4 rotMatrix(1.0f);
+
+	rotMatrix = glm::translate(rotMatrix, -pivot);
+	tmp = rotMatrix * tmp;
+
+	rotMatrix = glm::mat4(1.0f);
+	std::cout << moveSpeed << "\n";
+	moved += moveSpeed;
+	if (moved > 50 * PI)
+	{
+		moveSpeed = -moveSpeed;
+		moved = 50 * PI;
+	}
+	if (moved < 0.0f)
+	{
+		moveSpeed = -moveSpeed;
+		moved = 0.0f;
+	}
+
+	rotMatrix = glm::rotate(rotMatrix, glm::radians(moveSpeed), axis);
+	tmp = rotMatrix * tmp;
+
+	rotMatrix = glm::mat4(1.0f);
+	rotMatrix = glm::translate(rotMatrix, pivot);
+	tmp = rotMatrix * tmp;
+
+	positions[0] = tmp.x;
+	positions[1] = tmp.y;
+	positions[2] = tmp.z;
+
+	updateVbo();
+}
+
 void PolygonShape::add(const float x, const float y)
 {
 	positions.push_back(x);
@@ -255,8 +544,25 @@ void PolygonShape::draw(GLuint shaderProgram) const
 	
 	if (polygonType == PolygonType::LINE)
 	{
-		glLineWidth(3.0f);
 		glDrawElements(GL_LINES, 2, GL_UNSIGNED_INT, 0);
+	}
+	else if (polygonType == PolygonType::RECTSHAPE)
+	{
+		for (int i = 0; i < 2; ++i) {
+			if (drawingIdx[i])
+			{
+				if (drawType == 1)
+				{
+					//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
+				}
+				if (drawType == 2)
+				{
+					//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+					glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
+				}
+			}
+		}
 	}
 	else
 	{
