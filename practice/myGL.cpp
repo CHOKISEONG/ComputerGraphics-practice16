@@ -9,25 +9,27 @@
 MyGL* MyGL::my = nullptr;
 
 /// <summary>
-/// 그려질 도형들을 모아놓는 변수
+/// 그려질 도형들을 모아놓는 곳
 /// </summary>
-/// 좌클릭 - 정육면체 그리기, 우클릭 - 사각뿔그리기
-PolygonShape* cube;
-std::vector<PolygonShape*> pyramid;
-std::vector<float> orgPyramidPos;
-std::vector<PolygonShape*> lines;
-bool isBackFaceCulling = false;
+std::vector<PolygonShape*> axis; // x,y,z 축
+PolygonShape* cube;				 // 큐브
+PolygonShape* pyramid;			 // 피라미드
+
+float d = 0.3f; // 큐브의 초기 반지름
+float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
+					,d,d,-d,-d,d,-d,-d,-d,-d,d,-d,-d };
+float pyramidPos[15]{ 0.0f,0.5f,0.0f
+			,0.2f,-0.2f,0.2f
+			,-0.2f,-0.2f,0.2f
+			,-0.2f,-0.2f,-0.2f
+			,0.2f,-0.2f,-0.2f };
+
 char trigger;
 bool whatToDraw = false;
-float d = 0.3f; // 큐브의 초기 반지름
+
 float tmp = 0.0f;
 unsigned long long pMoved = 0;
-// 원래 큐브 위치
-std::vector<float> orgPyr1{ 0.0f,0.5f,0.0f, -0.2f,-0.2f,0.2f, 0.2f,-0.2f,0.2f };
-std::vector<float> orgPyr2{ 0.0f,0.5f,0.0f, -0.2f,-0.2f,-0.2f, -0.2f,-0.2f,0.2f };
-std::vector<float> orgPyr3{ 0.0f,0.5f,0.0f, 0.2f,-0.2f,-0.2f, -0.2f,-0.2f,-0.2f };
-std::vector<float> orgPyr4{ 0.0f,0.5f,0.0f, 0.2f,-0.2f,0.2f, 0.2f,-0.2f,-0.2f };
-std::vector<float> orgPyr5{ 0.2f,-0.2f,0.2f, -0.2f,-0.2f,0.2f, -0.2f,-0.2f,-0.2f, 0.2f,-0.2f,-0.2f };
+
 void MyGL::reShape(int w, int h)
 {
 	my->height = h;
@@ -157,10 +159,10 @@ void MyGL::draw()
  	unsigned int modelLocation = glGetUniformLocation(my->shaderProgramID, "model_transform");
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
-	for (const auto& l : lines)
+	for (const auto& l : axis)
 		l->draw(my->shaderProgramID);
-	for (const auto& p : pyramid)
-		p->draw(my->shaderProgramID);
+	pyramid->draw(my->shaderProgramID);
+	cube->draw(my->shaderProgramID);
 	
 
 	glutSwapBuffers();
@@ -205,50 +207,15 @@ void MyGL::run(int argc, char** argv)
 	float xLine[6]{ -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f };
 	float yLine[6]{ 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
 	float zLine[6]{ 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f };
-	lines.push_back(new PolygonShape(PolygonType::LINE, xLine));
-	lines.push_back(new PolygonShape(PolygonType::LINE, yLine));
-	lines.push_back(new PolygonShape(PolygonType::LINE, zLine));
-	lines[0]->setColor(1.0f, 0.0f, 0.0f);
-	lines[1]->setColor(0.0f, 1.0f, 0.0f);
-	lines[2]->setColor(0.0f, 0.0f, 1.0f);
-
-	/*float c1[12]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d };
-	float c2[12]{ -d,d,d,-d,d,-d,-d,-d,-d,-d,-d,d };
-	float c3[12]{ d,d,d,d,d,-d,-d,d,-d,-d,d,d };
-	float c4[12]{ d,d,-d,d,d,d,d,-d,d,d,-d,-d };
-	float c5[12]{ -d,d,-d,d,d,-d,d,-d,-d,-d,-d,-d };
-	float c6[12]{ d,-d,-d, -d,-d,-d,-d,-d,d,d,-d,d };
+	axis.push_back(new PolygonShape(PolygonType::LINE, xLine));
+	axis.push_back(new PolygonShape(PolygonType::LINE, yLine));
+	axis.push_back(new PolygonShape(PolygonType::LINE, zLine));
+	axis[0]->setColor(1.0f, 0.0f, 0.0f);
+	axis[1]->setColor(0.0f, 1.0f, 0.0f);
+	axis[2]->setColor(0.0f, 0.0f, 1.0f);
 	
-	cube.push_back(new PolygonShape(PolygonType::RECTSHAPE, c6));
-	cube.push_back(new PolygonShape(PolygonType::RECTSHAPE, c5));
-	cube.push_back(new PolygonShape(PolygonType::RECTSHAPE, c4));
-	cube.push_back(new PolygonShape(PolygonType::RECTSHAPE, c3));
-	cube.push_back(new PolygonShape(PolygonType::RECTSHAPE, c2));
-	cube.push_back(new PolygonShape(PolygonType::RECTSHAPE, c1));
-	for (int i{}; i < cube.size(); ++i)
-	{
-		cube[i]->move(-0.5f, 0.0f);
-	}*/
-	float d = 0.3f;
-	float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
-					,d,d,-d,-d,d,-d,-d,-d,-d,d,-d,-d };
 	cube = new PolygonShape(PolygonType::CUBE, cubePos);
-	
-	float sp1[9]{ 0.0f,0.5f,0.0f, -0.2f,-0.2f,0.2f, 0.2f,-0.2f,0.2f };
-	float sp2[9]{ 0.0f,0.5f,0.0f, -0.2f,-0.2f,-0.2f, -0.2f,-0.2f,0.2f };
-	float sp3[9]{ 0.0f,0.5f,0.0f, 0.2f,-0.2f,-0.2f, -0.2f,-0.2f,-0.2f };
-	float sp4[9]{ 0.0f,0.5f,0.0f, 0.2f,-0.2f,0.2f, 0.2f,-0.2f,-0.2f };
-	float sp5[12]{ 0.2f,-0.2f,0.2f, -0.2f,-0.2f,0.2f, -0.2f,-0.2f,-0.2f, 0.2f,-0.2f,-0.2f };
-	pyramid.push_back(new PolygonShape(PolygonType::TRIANGLE, sp4));
-	pyramid.push_back(new PolygonShape(PolygonType::TRIANGLE, sp3));
-	pyramid.push_back(new PolygonShape(PolygonType::TRIANGLE, sp2));
-	pyramid.push_back(new PolygonShape(PolygonType::TRIANGLE, sp1));
-	pyramid.push_back(new PolygonShape(PolygonType::RECTSHAPE, sp5));
-	for (int i{}; i < 5; ++i)
-	{
-		pyramid[i]->setShapeNum(i);
-		pyramid[i]->move(0.5f, 0.0f);
-	}
+	pyramid = new PolygonShape(PolygonType::SQUAREPYRAMID, pyramidPos);
 
 	glutDisplayFunc(MyGL::draw);
 	glutReshapeFunc(MyGL::reShape);
