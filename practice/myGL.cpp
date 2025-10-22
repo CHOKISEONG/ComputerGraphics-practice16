@@ -90,6 +90,7 @@ void MyGL::idle()
 			}
 		}
 	}
+	//hi
 
 	glutPostRedisplay();
 }
