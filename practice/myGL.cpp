@@ -43,54 +43,7 @@ void MyGL::reShape(int w, int h)
 }
 void MyGL::idle()
 {
-	for (auto& c : cube)
-	{
-		if (c->getIsMoving())
-		{
-			c->rotate();
-		}
-
-		if (c->getIsRotating())
-		{
-			c->rotate2();
-		}
-	}
 	
-	++pMoved;
-	int tmp = (pMoved / 10) % 4;
-	for (auto& p : pyramid)
-	{
-		if (p->getIsMoving())
-		{
-			p->rotate();
-		}
-
-		if (p->getIsRotating())
-		{
-			p->rotate2();
-			std::cout << tmp << "\n";
-			if (p->getRotateType() == 6)
-			{
-				if (tmp == 0)
-				{
-					pyramid[0]->rotateR(0);
-				}
-				else if (tmp == 1)
-				{
-					pyramid[1]->rotateR(1);
-				}
-				else if (tmp == 2)
-				{
-					pyramid[2]->rotateR(2);
-				}
-				else
-				{
-					pyramid[3]->rotateR(3);
-				}
-			}
-		}
-	}
-
 	glutPostRedisplay();
 }
 
@@ -100,176 +53,64 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	trigger = key;
 	switch (key)
 	{
-	// 리셋하고 육면체 출력 (미완성)
-	case'c': 
-	{
-		cube[0]->setPos(cube6);
-		cube[1]->setPos(cube5);
-		cube[2]->setPos(cube4);
-		cube[3]->setPos(cube3);
-		cube[4]->setPos(cube2);
-		cube[5]->setPos(cube1);
-		whatToDraw = false;
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-		for (auto& c : cube)
-		{
-			c->moveDecline();
-			c->rotateDecline();
-		}
-		for (auto& c : cube)
-			c->setRotateDir(0);
-		for (auto& p : pyramid)
-		{
-			p->moveDecline();
-			p->rotateDecline();
-		}
-		for (auto& p : pyramid)
-			p->setRotateDir(0);
+	case'1': {
+		//왼쪽 객체만 출력
 		break;
 	}
-
-	// 육면체/사각뿔 버튼 누를 때마다 다르게 출력
-	case'p': 
-		whatToDraw = !whatToDraw;
-		break;
-
-	// 은면제거 적용/해제
-	case'h':
-	{
-		isBackFaceCulling = !isBackFaceCulling;
-		if (isBackFaceCulling)
-		{
-			glEnable(GL_CULL_FACE);
-			glEnable(GL_DEPTH_TEST);
-		}
-		else
-		{
-			glDisable(GL_CULL_FACE);
-			glDisable(GL_DEPTH_TEST);
-		}
-		break;
-	}	
-
-	// y축에 대해 자전
-	case'y': 
-	{
-		yTrig = !yTrig;
+	case'2': {
+		// show right object
 		break;
 	}
-
-	// 윗면이 가운데를 중심으로 돌기
-	case't':
-	{
-		static bool key_t = false;
-		key_t = !key_t;
-		for (auto& c : cube)
-			c->rotateDecline();
-		if (key_t)
-		{
-			cube[3]->rotateAccept();
-			cube[3]->setRotateType(1);
-		}
-		
+	case'3': {
+		// show both object
 		break;
 	}
-	
-	// 앞면이 위축을 기준으로 회전하여 열기/닫기
-	case'f':
-	{
-		for (auto& c : cube)
-			c->rotateDecline();
-
-		static bool key_f = false;
-		key_f = !key_f;
-		if (key_f)
-		{
-			cube[5]->initMoved();
-			cube[5]->rotateAccept();
-			cube[5]->setRotateType(2);
-		}
+	case'x':case'X': {
+		// rotate object's x axis + -
 		break;
 	}
-	
-	// 옆면이 중점을 기준으로 제자리에서 회전/멈추기
-	case 's':
-	{
-		for (auto& c : cube)
-			c->rotateDecline();
-		static bool key_s = false;
-		key_s = !key_s;
-		if (key_s)
-		{
-			cube[2]->rotateAccept();
-			cube[4]->rotateAccept();
-			cube[2]->setRotateType(3);
-			cube[4]->setRotateType(3);
-		}
+	case'y':case'Y': {
+		// rotate object's y axis + -
 		break;
 	}
-
-	// 뒷면이 제자리에서 작아지면서 없어졌다 커지기 반복
-	case'b':
-	{
-		for (auto& c : cube)
-			c->rotateDecline();
-
-		static bool key_b = false;
-		key_b = !key_b;
-		if (key_b)
-		{
-			cube[1]->initMoved();
-			cube[1]->rotateAccept();
-			cube[1]->setRotateType(4);
-		}
+	case'r':case'R': {
+		// rotate zeroPoint's y axis + -
 		break;
 	}
-	
-	//  사각뿔 옆면들이 열었다 닫았다.
-	case'o': 
-	{
-		pyramid[0]->setPos(orgPyr4);
-		pyramid[1]->setPos(orgPyr3);
-		pyramid[2]->setPos(orgPyr2);
-		pyramid[3]->setPos(orgPyr1);
-		pyramid[4]->setPos(orgPyr5);
-		for (auto& p : pyramid)
-			p->rotateDecline();
-
-		static bool key_o = false;
-		key_o = !key_o;
-		if (key_o)
-		{
-			for (int i{}; i < 4; ++i)
-			{
-				pyramid[i]->initMoved();
-				pyramid[i]->rotateAccept();
-				pyramid[i]->setRotateType(5);
-			}
-		}
+	case'a':case'A': {
+		// scale
 		break;
 	}
-	case'r':
-	{
-		pyramid[0]->setPos(orgPyr4);
-		pyramid[1]->setPos(orgPyr3);
-		pyramid[2]->setPos(orgPyr2);
-		pyramid[3]->setPos(orgPyr1);
-		pyramid[4]->setPos(orgPyr5);
-		for (auto& p : pyramid)
-			p->rotateDecline();
-
-		static bool key_r = false;
-		key_r = !key_r;
-		if (key_r)
-		{
-			for (int i{}; i < 4; ++i)
-			{
-				pyramid[i]->initMoved();
-				pyramid[i]->rotateAccept();
-				pyramid[i]->setRotateType(6);
-			}
-		}
+	case'b':case'B': {
+		// 원점에 대한 확대/축소
+		break;
+	}
+	case'd':case'D': {
+		// move objects's x
+		break;
+	}
+	case'e':case'E': {
+		// move object's y
+		break;
+	}
+	case 't': {
+		// 두 도형이 원점을 통과하며 상대방의 자리로 이동하는 애니메이션
+		break;
+	}
+	case 'u': {
+		// 두 도형이 한개는 위로 한개는 아래로 이동하면서 상대방의 자리로 이동하는 애니메이션
+		break;
+	}
+	case 'v': {
+		// 뭔말인지 모름
+		break;
+	}
+	case 'c': {
+		// 두 도형을 다른거로 바꾸기
+		break;
+	}
+	case's': {
+		//초기화
 		break;
 	}
 	case 'q':
@@ -302,44 +143,34 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 //	}
 //	glutPostRedisplay();
 //}
-void MyGL::mouse(int button, int state, int x, int y)
-{
-	float crx = (2.0f * x - my->width) / my->width;
-	float cry = -(2.0f * y - my->height) / my->height;
-
-	
-
-	glutPostRedisplay();
-}
+//void MyGL::mouse(int button, int state, int x, int y)
+//{
+//	float crx = (2.0f * x - my->width) / my->width;
+//	float cry = -(2.0f * y - my->height) / my->height;
+//
+//	
+//
+//	glutPostRedisplay();
+//}
 void MyGL::draw()
 {
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(my->shaderProgramID);
 
-	if (yTrig)
-		tmp += 0.1f;
 	glm::mat4 model = glm::mat4(1.0f);
-	// x축 30도, y축 -30도 회전해서 그리기
 	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
-	model = glm::rotate(model, glm::radians(tmp), glm::vec3(0.0, 1.0, 0.0));
+	model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0, 1.0, 0.0));
  	unsigned int modelLocation = glGetUniformLocation(my->shaderProgramID, "model_transform");
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
 	for (const auto& l : lines)
 		l->draw(my->shaderProgramID);
-	
-	if (whatToDraw)
-	{
-		for (const auto& p : pyramid)
-			p->draw(my->shaderProgramID);
-	}
-	else
-	{
-		for (const auto& c : cube)
-			c->draw(my->shaderProgramID);
-	}
-	
+	for (const auto& p : pyramid)
+		p->draw(my->shaderProgramID);
+	for (const auto& c : cube)
+		c->draw(my->shaderProgramID);
+
 	glutSwapBuffers();
 }
 
@@ -402,6 +233,10 @@ void MyGL::run(int argc, char** argv)
 	cube.push_back(new PolygonShape(PolygonType::RECTSHAPE, c3));
 	cube.push_back(new PolygonShape(PolygonType::RECTSHAPE, c2));
 	cube.push_back(new PolygonShape(PolygonType::RECTSHAPE, c1));
+	for (int i{}; i < cube.size(); ++i)
+	{
+		cube[i]->move(-0.5f, 0.0f);
+	}
 	
 	float sp1[9]{ 0.0f,0.5f,0.0f, -0.2f,-0.2f,0.2f, 0.2f,-0.2f,0.2f };
 	float sp2[9]{ 0.0f,0.5f,0.0f, -0.2f,-0.2f,-0.2f, -0.2f,-0.2f,0.2f };
@@ -416,11 +251,12 @@ void MyGL::run(int argc, char** argv)
 	for (int i{}; i < 5; ++i)
 	{
 		pyramid[i]->setShapeNum(i);
+		pyramid[i]->move(0.5f, 0.0f);
 	}
 
 	glutDisplayFunc(MyGL::draw);
 	glutReshapeFunc(MyGL::reShape);
-	glutMouseFunc(MyGL::mouse);
+	//glutMouseFunc(MyGL::mouse);
 	//glutMotionFunc(MyGL::motion);
 	//glutPassiveMotionFunc(MyGL::passiveMotion);
 	glutKeyboardFunc(MyGL::keyboard);
