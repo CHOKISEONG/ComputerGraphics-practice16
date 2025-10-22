@@ -30,6 +30,7 @@ bool whatToDraw = false;
 float tmp = 0.0f;
 unsigned long long pMoved = 0;
 
+
 void MyGL::reShape(int w, int h)
 {
 	my->height = h;
@@ -215,7 +216,13 @@ void MyGL::run(int argc, char** argv)
 	axis[2]->setColor(0.0f, 0.0f, 1.0f);
 	
 	cube = new PolygonShape(PolygonType::CUBE, cubePos);
+	cube->move(-0.5f, 0.0f);
+
 	pyramid = new PolygonShape(PolygonType::SQUAREPYRAMID, pyramidPos);
+	pyramid->move(0.5f, 0.0f);
+
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 
 	glutDisplayFunc(MyGL::draw);
 	glutReshapeFunc(MyGL::reShape);

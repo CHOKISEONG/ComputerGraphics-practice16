@@ -52,10 +52,13 @@ PolygonShape::PolygonShape(PolygonType type, const float* f)
 	}
 	else if (type == PolygonType::SQUAREPYRAMID) // »ç°¢»Ô
 	{
-		index = { 0,2,1,0,2,1,0,3,2,0,3,2,0,4,3,0,4,3,0,1,4,0,1,4,1,2,4,2,3,4 };
+		index = { 1,2,4,2,3,4,
+			0,4,3,0,4,3,
+			0,1,4,0,1,4,
+			0,2,1,0,2,1,
+			0,3,2,0,3,2,
+		};
 		polygonType = PolygonType::SQUAREPYRAMID;
-
-		std::fill(drawingIdx, drawingIdx + 12, true);
 
 		setMidpoint(0.0f, 0.0f);
 		for (int i{}; i < 15; i += 3)
@@ -544,39 +547,13 @@ void PolygonShape::draw(GLuint shaderProgram) const
 	{
 		glDrawElements(GL_LINES, 2, GL_UNSIGNED_INT, 0);
 	}
-	else if (polygonType == PolygonType::RECTSHAPE)
-	{
-		for (int i = 0; i < 2; ++i) {
-			if (drawingIdx[i])
-			{
-				if (drawType == 1)
-				{
-					//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-					glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
-				}
-				if (drawType == 2)
-				{
-					//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-					glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
-				}
-			}
-		}
-	}
 	else
 	{
-		for (int i = 0; i < 12; ++i) {
+		for (int i = 0; i < index.size() / 3; ++i) {
 			if (drawingIdx[i])
 			{
-				if (drawType == 1)
-				{
-					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-					glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
-				}
-				if (drawType == 2)
-				{
-					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-					glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
-				}
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(i * 3 * sizeof(unsigned int)));
 			}
 		}
 	}
