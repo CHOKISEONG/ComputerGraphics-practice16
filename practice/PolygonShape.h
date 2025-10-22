@@ -15,7 +15,8 @@ enum PolygonType
     RECTSHAPE,
     PENTAGON,
     POLYGON,
-    SQUAREPYRAMID
+    SQUAREPYRAMID,
+    CUBE
 };
 
 class PolygonShape : public ShapeManager
@@ -44,7 +45,7 @@ class PolygonShape : public ShapeManager
     int rotateType = 0;
     int shapeNum = -1;
 public:
-    PolygonShape();
+    //PolygonShape();
     PolygonShape(PolygonType type, const float* f);
     PolygonShape(std::vector<float>& v);
     PolygonShape(const PolygonShape& other);
@@ -54,7 +55,6 @@ public:
 
     void setDrawType(int n) { drawType = n; }
     void setColor(const float r, const float g, const float b);
-    void setRegularHexagon();
     void setRotateDir(int n) { rotateDir = n; isMoving = true; }
     void setPos(std::vector<float> p) { positions = p; updateVbo(); }
     void setShapeNum(int n) { shapeNum = n; }

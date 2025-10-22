@@ -1,32 +1,18 @@
 #include "PolygonShape.h"
 
-PolygonShape::PolygonShape() // 기본은 정육각형
-{
-	index = 
-	{  
-		0, 3, 7, // 4
-		0, 7, 4,
-		4, 7, 6, // 5
-		4, 6, 5,
-		7, 2, 6, // 6
-		7, 3, 2,
-		0, 1, 2, // 1
-		0, 2, 3,
-		1, 5, 6, // 2
-		1, 6, 2,
-		4, 5, 1, // 3
-		4, 1, 0,
-	};
-	slope = 0.0f;
-	r = 1.0f;
-	polygonType = PolygonType::POLYGON;
-	moved = 0.0f;
-	std::fill(drawingIdx, drawingIdx + 12, true);
-
-	setMidpoint(0.0f, 0.0f);
-	setRegularHexagon();
-	initBuffer();
-}
+//PolygonShape::PolygonShape() // 기본은 정육각형
+//{
+//	
+//	slope = 0.0f;
+//	r = 1.0f;
+//	polygonType = PolygonType::POLYGON;
+//	moved = 0.0f;
+//	std::fill(drawingIdx, drawingIdx + 12, true);
+//
+//	setMidpoint(0.0f, 0.0f);
+//	setRegularHexagon();
+//	initBuffer();
+//}
 
 PolygonShape::PolygonShape(PolygonType type, const float* f)
 {
@@ -77,7 +63,30 @@ PolygonShape::PolygonShape(PolygonType type, const float* f)
 			add(f[0 + i], f[1 + i], f[2 + i]);
 		}
 	}
-
+	else if (type == PolygonType::CUBE)
+	{
+		index =
+		{
+			0, 3, 7, // 4
+			0, 7, 4,
+			4, 7, 6, // 5
+			4, 6, 5,
+			7, 2, 6, // 6
+			7, 3, 2,
+			0, 1, 2, // 1
+			0, 2, 3,
+			1, 5, 6, // 2
+			1, 6, 2,
+			4, 5, 1, // 3
+			4, 1, 0,
+		};
+		polygonType = CUBE;
+		setMidpoint(0.0f, 0.0f);
+		for (int i{}; i < 24; i += 3)
+		{
+			add(f[0 + i], f[1 + i], f[2 + i]);
+		}
+	}
 	initBuffer();
 }
 
@@ -153,20 +162,6 @@ void PolygonShape::setColor(const float r, const float g, const float b)
 		colors[2 + (i * 3)] = b;
 	}
 	updateVbo();
-}
-
-void PolygonShape::setRegularHexagon()
-{
-	float d = 0.3f;
-	add(d, d, d);
-	add(-d, d, d);
-	add(-d, -d, d);
-	add(d, -d, d);
-
-	add(d, d, -d);
-	add(-d, d, -d);
-	add(-d, -d, -d);
-	add(d, -d, -d);
 }
 
 void PolygonShape::rotate()

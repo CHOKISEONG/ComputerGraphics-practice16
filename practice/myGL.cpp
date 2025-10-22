@@ -12,7 +12,7 @@ MyGL* MyGL::my = nullptr;
 /// 그려질 도형들을 모아놓는 변수
 /// </summary>
 /// 좌클릭 - 정육면체 그리기, 우클릭 - 사각뿔그리기
-std::vector<PolygonShape*> cube;
+PolygonShape* cube;
 std::vector<PolygonShape*> pyramid;
 std::vector<float> orgPyramidPos;
 std::vector<PolygonShape*> lines;
@@ -20,16 +20,9 @@ bool isBackFaceCulling = false;
 char trigger;
 bool whatToDraw = false;
 float d = 0.3f; // 큐브의 초기 반지름
-bool yTrig = false;
 float tmp = 0.0f;
 unsigned long long pMoved = 0;
-// 원래 큐브 면 마다 위치들
-std::vector<float> cube1{ d,d,d,-d,d,d,-d,-d,d,d,-d,d };
-std::vector<float> cube2{ -d,d,d,-d,d,-d,-d,-d,-d,-d,-d,d };
-std::vector<float> cube3{ d,d,d,d,d,-d,-d,d,-d,-d,d,d };
-std::vector<float> cube4{ d,d,-d,d,d,d,d,-d,d,d,-d,-d };
-std::vector<float> cube5{ -d,d,-d,d,d,-d,d,-d,-d,-d,-d,-d };
-std::vector<float> cube6{ d,-d,-d, -d,-d,-d,-d,-d,d,d,-d,d };
+// 원래 큐브 위치
 std::vector<float> orgPyr1{ 0.0f,0.5f,0.0f, -0.2f,-0.2f,0.2f, 0.2f,-0.2f,0.2f };
 std::vector<float> orgPyr2{ 0.0f,0.5f,0.0f, -0.2f,-0.2f,-0.2f, -0.2f,-0.2f,0.2f };
 std::vector<float> orgPyr3{ 0.0f,0.5f,0.0f, 0.2f,-0.2f,-0.2f, -0.2f,-0.2f,-0.2f };
@@ -168,8 +161,7 @@ void MyGL::draw()
 		l->draw(my->shaderProgramID);
 	for (const auto& p : pyramid)
 		p->draw(my->shaderProgramID);
-	for (const auto& c : cube)
-		c->draw(my->shaderProgramID);
+	
 
 	glutSwapBuffers();
 }
@@ -220,7 +212,7 @@ void MyGL::run(int argc, char** argv)
 	lines[1]->setColor(0.0f, 1.0f, 0.0f);
 	lines[2]->setColor(0.0f, 0.0f, 1.0f);
 
-	float c1[12]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d };
+	/*float c1[12]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d };
 	float c2[12]{ -d,d,d,-d,d,-d,-d,-d,-d,-d,-d,d };
 	float c3[12]{ d,d,d,d,d,-d,-d,d,-d,-d,d,d };
 	float c4[12]{ d,d,-d,d,d,d,d,-d,d,d,-d,-d };
@@ -236,7 +228,11 @@ void MyGL::run(int argc, char** argv)
 	for (int i{}; i < cube.size(); ++i)
 	{
 		cube[i]->move(-0.5f, 0.0f);
-	}
+	}*/
+	float d = 0.3f;
+	float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
+					,d,d,-d,-d,d,-d,-d,-d,-d,d,-d,-d };
+	cube = new PolygonShape(PolygonType::CUBE, cubePos);
 	
 	float sp1[9]{ 0.0f,0.5f,0.0f, -0.2f,-0.2f,0.2f, 0.2f,-0.2f,0.2f };
 	float sp2[9]{ 0.0f,0.5f,0.0f, -0.2f,-0.2f,-0.2f, -0.2f,-0.2f,0.2f };
