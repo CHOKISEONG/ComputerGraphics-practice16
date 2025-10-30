@@ -17,8 +17,6 @@
 PolygonShape::PolygonShape(PolygonType type, const float* f)
 {
 	std::fill(drawingIdx, drawingIdx + 12, true);
-	slope = 0.0f;
-	r = 1.0f;
 	if (type == PolygonType::LINE)
 	{
 		index = { 0,1 };
@@ -103,12 +101,7 @@ PolygonShape::PolygonShape(const PolygonShape& other)
 	, ebo(other.ebo)
 	, positions(other.positions) // std::vector는 깊은 복사됨
 	, index(other.index)
-	, isMoving(other.isMoving)
 	, moveSpeed(other.moveSpeed)
-	, slope(other.slope)
-	, distance(other.distance)
-	, moved(other.moved)
-	, r(other.r)
 	, polygonType(other.polygonType)
 {
 	midpoint[0] = other.midpoint[0]; midpoint[1] = other.midpoint[1];
@@ -236,47 +229,4 @@ void PolygonShape::move(float x, float y)
 	}
 
 	updateVbo();
-}
-
-bool PolygonShape::isMouseInside(float x, float y) const
-{
-	if (polygonType == PolygonType::POINTTYPE)
-	{
-		if (abs(x - midpoint[0]) < r / 10 && abs(y - midpoint[1]) < r / 10)
-			return true;
-	}
-	else if (polygonType == PolygonType::LINE)
-	{
-		float sx = positions[0] - positions[3];
-		float sy = positions[1] - positions[4];
-		float p[2]{ positions[3],positions[4] };
-
-		for (int i{}; i < 20; ++i)
-		{
-			p[0] += 0.05f * sx;
-			p[1] += 0.05f * sy;
-			if (abs(x - p[0]) < 0.05f && abs(y - p[1]) < 0.05f)
-				return true;
-		}
-	}
-	else if (polygonType == PolygonType::TRIANGLE)
-	{
-		// 느슨한 바운딩 구 검사로 함
-		if (sqrt(pow(x - midpoint[0], 2) + pow(y - midpoint[1], 2)) <= r)
-			return true;
-	}
-	else if (polygonType == PolygonType::RECTSHAPE)
-	{
-		// 느슨한 바운딩 구 검사로 함
-		if (sqrt(pow(x - midpoint[0], 2) + pow(y - midpoint[1], 2)) <= r)
-			return true;
-	}
-	else if (polygonType == PolygonType::PENTAGON)
-	{
-		// 느슨한 바운딩 구 검사로 함
-		if (sqrt(pow(x - midpoint[0], 2) + pow(y - midpoint[1], 2)) <= r)
-			return true;
-	}
-
-	return false;
 }

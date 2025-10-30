@@ -38,7 +38,4 @@ public:
 
 	virtual void draw(GLuint shaderProgram) const override;
 	virtual void move(float x, float y) override;
-	virtual bool isMouseInside(float x, float y) const override {
-		return false;
-	};
 };

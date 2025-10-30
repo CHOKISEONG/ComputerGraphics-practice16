@@ -25,12 +25,14 @@ class PolygonShape : public ShapeManager
     std::vector<GLfloat> positions;
     std::vector<GLfloat> colors;
     std::vector<unsigned int> index;
-    bool drawingIdx[12]{}; // true인 면만 그리는 용
+    bool drawingIdx[12]{};          // true인 면만 그리는 용도
 
-    float midpoint[2]; // 도형의 중심점
-    unsigned short polygonType = 0;
-    int drawType = 1;
-    float moveSpeed = 0.5f;
+    float midpoint[2];              // 도형의 중심점
+    unsigned short polygonType = 0; // 도형의 타입          
+    float moveSpeed = 0.0f;
+
+    // 실습 18용 변수
+    bool canMove = false;
 
 public:
     //PolygonShape();
@@ -42,24 +44,30 @@ public:
     void initBuffer();
     void updateVbo();
 
-    void setDrawType(int n) { drawType = n; }
-    void setColor(const float r, const float g, const float b);
-    void setPos(std::vector<float> p) { positions = p; updateVbo(); }
-
+    unsigned short getPolytonType() { return polygonType; };
     std::vector<float> getPos() const { return positions; }
 
+    void setColor(const float r, const float g, const float b);
+    void setPos(std::vector<float> p) { positions = p; updateVbo(); }
+    void setMidpoint(const float x, const float y);
+    
     void drawAll() { std::fill(drawingIdx, drawingIdx + 12, true); }
     void drawNone() { std::fill(drawingIdx, drawingIdx + 12, false); }
     void drawSomething(int n) { drawingIdx[n * 2] = true; drawingIdx[n * 2 + 1] = true; }
 
-    void setMidpoint(const float x, const float y);
-    unsigned short getPolytonType() { return polygonType; };
+    /// <summary>
+    /// 실습 18용 함수들
+    /// </summary>
+    void update() { return; }
 
+    void startMove() { canMove = true; }
+    void stopMove() { canMove = false; }
+    bool getCanMove() { if (canMove) std::cout << "can move!\n";  return canMove; }
+    
 
     void add(const float x, const float y);
     void add(const float x, const float y, const float z);
 
     virtual void draw(GLuint shaderProgram) const override;
     virtual void move(float x, float y) override;
-    virtual bool isMouseInside(float x, float y) const override;
 };

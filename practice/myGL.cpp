@@ -12,8 +12,7 @@ MyGL* MyGL::my = nullptr;
 /// 그려질 도형들을 모아놓는 곳
 /// </summary>
 std::vector<PolygonShape*> axis; // x,y,z 축
-PolygonShape* cube;				 // 큐브
-PolygonShape* pyramid;			 // 피라미드
+std::vector<PolygonShape*> shapes;				 // 큐브
 
 float d = 0.3f; // 큐브의 초기 반지름
 float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
@@ -30,7 +29,6 @@ bool whatToDraw = false;
 float tmp = 0.0f;
 unsigned long long pMoved = 0;
 
-
 void MyGL::reShape(int w, int h)
 {
 	my->height = h;
@@ -39,7 +37,8 @@ void MyGL::reShape(int w, int h)
 }
 void MyGL::idle()
 {
-	
+	for (auto& s : shapes)
+		s->update();
 	glutPostRedisplay();
 }
 
@@ -49,120 +48,149 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	trigger = key;
 	switch (key)
 	{
+	case '0': {
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			std::cout << i << "도형 좌표\n";
+			std::vector<float> tmp = shapes[i]->getPos();
+			for (const auto& i : tmp)
+				std::cout << i << " ";
+			std::cout << std::endl;
+		}
+		break;
+	}
 	case'1': {
 		// 왼쪽 객체만 적용
-		cube->startMove();
-		pyramid->stopMove();
+		std::cout << "press 1\n";
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			if (i % 2)
+				shapes[i]->stopMove();
+			else
+				shapes[i]->startMove();
+		}
 		break;
 	}
 	case'2': {
 		// 오른쪽 객체만 적용
-		cube->stopMove();
-		pyramid->startMove();
+		std::cout << "press 2\n";
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			if (i % 2)
+				shapes[i]->startMove();
+			else
+				shapes[i]->stopMove();
+		}
 		break;
 	}
 	case'3': {
 		// 둘 다 적용
-		cube->startMove();
-		pyramid->startMove();
+		std::cout << "press 3\n";
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->startMove();
+		}
 		break;
 	}
-	case'x':
-	{
-		// rotate object's x axis +
-		cube->changeSpeed(1.0f, 0.0f);
-		pyramid->changeSpeed(1.0f, 0.0f);
-		break;
-	}
-	case'X': 
-	{
-		// rotate object's x axis -
-		cube->changeSpeed(-1.0f, 0.0f);
-		pyramid->changeSpeed(-1.0f, 0.0f);
-		break;
-	}
-	case'y':
-	{
-		// rotate object's y axis +
-		cube->changeSpeed(0.0f, 1.0f);
-		pyramid->changeSpeed(0.0f, 1.0f);
-		break;
-	}
-	case'Y': 
-	{
-		// rotate object's y axis -
-		cube->changeSpeed(0.0f, -1.0f);
-		pyramid->changeSpeed(0.0f, -1.0f);
-		break;
-	}
-	case'r': 
-	{
-		// rotate zeroPoint's y axis + -
-		cube->startYRotate(1.0f);
-		pyramid->startYRotate(1.0f);
-		break;
-	}
-	case'R': {
-		// rotate zeroPoint's y axis + -
-		cube->startYRotate(-1.0f);
-		pyramid->startYRotate(-1.0f);
-		break;
-	}
-	case'a': {
-		// scale
-		cube->startIncrease(0.001f);
-		pyramid->startIncrease(0.001f);
-		break;
-	}
-	case'A': {
-		// scale
-		cube->startDecrease(0.001f);
-		pyramid->startDecrease(0.001f);
-		break;
-	}
-	case'b': {
-		// 원점에 대한 확대/축소
-		cube->startDecrease(0.001f, true);
-		pyramid->startDecrease(0.001f, true);
-		break;
-	}
-	case'B': {
-		// 원점에 대한 확대/축소
-		cube->startDecrease(0.001f, false);
-		pyramid->startDecrease(0.001f, false);
-		break;
-	}
+	//case'x':
+	//{
+	//	// rotate object's x axis +
+	//	cube->changeSpeed(1.0f, 0.0f);
+	//	pyramid->changeSpeed(1.0f, 0.0f);
+	//	break;
+	//}
+	//case'X': 
+	//{
+	//	// rotate object's x axis -
+	//	cube->changeSpeed(-1.0f, 0.0f);
+	//	pyramid->changeSpeed(-1.0f, 0.0f);
+	//	break;
+	//}
+	//case'y':
+	//{
+	//	// rotate object's y axis +
+	//	cube->changeSpeed(0.0f, 1.0f);
+	//	pyramid->changeSpeed(0.0f, 1.0f);
+	//	break;
+	//}
+	//case'Y': 
+	//{
+	//	// rotate object's y axis -
+	//	cube->changeSpeed(0.0f, -1.0f);
+	//	pyramid->changeSpeed(0.0f, -1.0f);
+	//	break;
+	//}
+	//case'r': 
+	//{
+	//	// rotate zeroPoint's y axis + -
+	//	cube->startYRotate(1.0f);
+	//	pyramid->startYRotate(1.0f);
+	//	break;
+	//}
+	//case'R': {
+	//	// rotate zeroPoint's y axis + -
+	//	cube->startYRotate(-1.0f);
+	//	pyramid->startYRotate(-1.0f);
+	//	break;
+	//}
+	//case'a': {
+	//	// scale
+	//	cube->startIncrease(0.001f);
+	//	pyramid->startIncrease(0.001f);
+	//	break;
+	//}
+	//case'A': {
+	//	// scale
+	//	cube->startDecrease(0.001f);
+	//	pyramid->startDecrease(0.001f);
+	//	break;
+	//}
+	//case'b': {
+	//	// 원점에 대한 확대/축소
+	//	cube->startDecrease(0.001f, true);
+	//	pyramid->startDecrease(0.001f, true);
+	//	break;
+	//}
+	//case'B': {
+	//	// 원점에 대한 확대/축소
+	//	cube->startDecrease(0.001f, false);
+	//	pyramid->startDecrease(0.001f, false);
+	//	break;
+	//}
 	case'd': {
 		// move objects's x
-		if (cube->canMove())
-			cube->move(-0.05f, 0.0f);
-		if (pyramid->canMove())
-			cube->move(-0.05f, 0.0f);
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			if (shapes[i]->getCanMove())
+				shapes[i]->move(-0.05f,0.0f);
+		}
 		break;
 	}
 	case'D': {
 		// move objects's x
-		if (cube->canMove())
-			cube->move(0.05f, 0.0f);
-		if (pyramid->canMove())
-			cube->move(0.05f, 0.0f);
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			if (shapes[i]->getCanMove())
+				shapes[i]->move(0.05f, 0.0f);
+		}
 		break;
 	}
 	case'e': {
 		// move object's y
-		if (cube->canMove())
-			cube->move(0.0f, -0.05f);
-		if (pyramid->canMove())
-			cube->move(0.0f, -0.05f);
-
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			if (shapes[i]->getCanMove())
+				shapes[i]->move(0.0f, -0.05f);
+		}
 		break;
 	}
 	case'E': {
 		// move object's y
-		if (cube->canMove())
-			cube->move(0.0f, 0.05f);
-		if (pyramid->canMove())
-			cube->move(0.0f, 0.05f);
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			if (shapes[i]->getCanMove())
+				shapes[i]->move(0.0f, 0.05f);
+		}
 		break;
 	}
 	case 't': {
@@ -238,9 +266,8 @@ void MyGL::draw()
 
 	for (const auto& l : axis)
 		l->draw(my->shaderProgramID);
-	pyramid->draw(my->shaderProgramID);
-	cube->draw(my->shaderProgramID);
-	
+	for (const auto& s : shapes)
+		s->draw(my->shaderProgramID);
 
 	glutSwapBuffers();
 }
@@ -281,6 +308,7 @@ void MyGL::run(int argc, char** argv)
 
 	make_shaderProgram();
 
+	// x y z 축 생성
 	float xLine[6]{ -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f };
 	float yLine[6]{ 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
 	float zLine[6]{ 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f };
@@ -291,11 +319,11 @@ void MyGL::run(int argc, char** argv)
 	axis[1]->setColor(0.0f, 1.0f, 0.0f);
 	axis[2]->setColor(0.0f, 0.0f, 1.0f);
 	
-	cube = new PolygonShape(PolygonType::CUBE, cubePos);
-	cube->move(-0.5f, 0.0f);
+	shapes.push_back(new PolygonShape(PolygonType::CUBE, cubePos));
+	shapes[0]->move(-0.5f, 0.0f);
 
-	pyramid = new PolygonShape(PolygonType::SQUAREPYRAMID, pyramidPos);
-	pyramid->move(0.5f, 0.0f);
+	shapes.push_back(new PolygonShape(PolygonType::SQUAREPYRAMID, pyramidPos));
+	shapes[1]->move(0.5f, 0.0f);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
