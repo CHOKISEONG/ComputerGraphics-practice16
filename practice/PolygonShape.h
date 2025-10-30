@@ -32,7 +32,11 @@ class PolygonShape : public ShapeManager
     float moveSpeed = 0.0f;
 
     // 실습 18용 변수
-    bool canMove = false;
+    bool canMove = false;   // 움직일 수 있는지 체크
+    float rotateSpeed[2]{}; // x,y 자전하는지 체크
+    bool isYRotate = false; // y축 공전하는지 체크
+    float increaseSpeed = 0.0f; // 확대/축소 속도
+    bool isIncreaseOrigin = false; // 확대/축소가 원점에 대한 확대/축소인지 체크
 
 public:
     //PolygonShape();
@@ -58,12 +62,23 @@ public:
     /// <summary>
     /// 실습 18용 함수들
     /// </summary>
-    void update() { return; }
+    void update();
 
     void startMove() { canMove = true; }
     void stopMove() { canMove = false; }
     bool getCanMove() { if (canMove) std::cout << "can move!\n";  return canMove; }
-    
+
+    void changeSpeed(float xSpeed, float ySpeed) { rotateSpeed[0] = xSpeed; rotateSpeed[1] = ySpeed; }
+    void startYRotate(float ySpeed) { rotateSpeed[1] = ySpeed; isYRotate = true; }
+    void startIncrease(float speed, bool isOrigin) { increaseSpeed = speed; if (isOrigin) isIncreaseOrigin = true; }
+    void startDecrease(float speed, bool isOrigin) { increaseSpeed = -speed; if (isOrigin) isIncreaseOrigin = true; }
+
+    void rotation();
+    void revolution();
+    void scaling();
+    void scalingByOrigin();
+    // 실습 18용 함수들
+
 
     void add(const float x, const float y);
     void add(const float x, const float y, const float z);

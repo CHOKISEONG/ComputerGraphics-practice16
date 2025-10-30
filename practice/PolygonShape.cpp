@@ -196,6 +196,49 @@ void PolygonShape::add(const float x, const float y, const float z)
 	updateVbo();
 }
 
+void PolygonShape::update()
+{
+	if (!canMove) return;
+	
+	rotation();
+	revolution();
+	scaling();
+	scalingByOrigin();
+}
+
+/// <summary>
+/// 자전하는 함수
+/// </summary>
+void PolygonShape::rotation()
+{
+	
+	if (rotateSpeed[0] == 0.0f && rotateSpeed[1] == 0.0f) return;
+
+}
+
+/// <summary>
+/// 공전하는 함수
+/// </summary>
+void PolygonShape::revolution()
+{
+	if (isYRotate) return;
+}
+
+/// <summary>
+/// 확대/축소하는 함수
+/// </summary>
+void PolygonShape::scaling()
+{
+	if (increaseSpeed == 0.0f) return;
+}
+
+/// <summary>
+/// 확대/축소를 원점에 대하여 하는 함수
+/// </summary>
+void PolygonShape::scalingByOrigin()
+{
+	if (isIncreaseOrigin) return;
+}
 void PolygonShape::draw(GLuint shaderProgram) const
 {
 	glBindVertexArray(vao);

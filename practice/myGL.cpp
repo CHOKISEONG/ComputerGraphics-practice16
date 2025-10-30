@@ -92,77 +92,12 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		}
 		break;
 	}
-	//case'x':
-	//{
-	//	// rotate object's x axis +
-	//	cube->changeSpeed(1.0f, 0.0f);
-	//	pyramid->changeSpeed(1.0f, 0.0f);
-	//	break;
-	//}
-	//case'X': 
-	//{
-	//	// rotate object's x axis -
-	//	cube->changeSpeed(-1.0f, 0.0f);
-	//	pyramid->changeSpeed(-1.0f, 0.0f);
-	//	break;
-	//}
-	//case'y':
-	//{
-	//	// rotate object's y axis +
-	//	cube->changeSpeed(0.0f, 1.0f);
-	//	pyramid->changeSpeed(0.0f, 1.0f);
-	//	break;
-	//}
-	//case'Y': 
-	//{
-	//	// rotate object's y axis -
-	//	cube->changeSpeed(0.0f, -1.0f);
-	//	pyramid->changeSpeed(0.0f, -1.0f);
-	//	break;
-	//}
-	//case'r': 
-	//{
-	//	// rotate zeroPoint's y axis + -
-	//	cube->startYRotate(1.0f);
-	//	pyramid->startYRotate(1.0f);
-	//	break;
-	//}
-	//case'R': {
-	//	// rotate zeroPoint's y axis + -
-	//	cube->startYRotate(-1.0f);
-	//	pyramid->startYRotate(-1.0f);
-	//	break;
-	//}
-	//case'a': {
-	//	// scale
-	//	cube->startIncrease(0.001f);
-	//	pyramid->startIncrease(0.001f);
-	//	break;
-	//}
-	//case'A': {
-	//	// scale
-	//	cube->startDecrease(0.001f);
-	//	pyramid->startDecrease(0.001f);
-	//	break;
-	//}
-	//case'b': {
-	//	// 원점에 대한 확대/축소
-	//	cube->startDecrease(0.001f, true);
-	//	pyramid->startDecrease(0.001f, true);
-	//	break;
-	//}
-	//case'B': {
-	//	// 원점에 대한 확대/축소
-	//	cube->startDecrease(0.001f, false);
-	//	pyramid->startDecrease(0.001f, false);
-	//	break;
-	//}
 	case'd': {
 		// move objects's x
 		for (int i{}; i < shapes.size(); ++i)
 		{
 			if (shapes[i]->getCanMove())
-				shapes[i]->move(-0.05f,0.0f);
+				shapes[i]->move(-0.05f, 0.0f);
 		}
 		break;
 	}
@@ -190,6 +125,91 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		{
 			if (shapes[i]->getCanMove())
 				shapes[i]->move(0.0f, 0.05f);
+		}
+		break;
+	}
+	case'x':
+	{
+		// rotate object's x axis +
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->changeSpeed(1.0f, 0.0f);
+		}
+		break;
+	}
+	case'X': 
+	{
+		// rotate object's x axis -
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->changeSpeed(-1.0f, 0.0f);
+		}
+		break;
+	}
+	case'y':
+	{
+		// rotate object's y axis +
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->changeSpeed(0.0f, 1.0f);
+		}
+		break;
+	}
+	case'Y': 
+	{
+		// rotate object's y axis -
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->changeSpeed(0.0f, -1.0f);
+		}
+		break;
+	}
+	case'r': 
+	{
+		// rotate zeroPoint's y axis + -
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->startYRotate(1.0f);
+		}
+		break;
+	}
+	case'R': {
+		// rotate zeroPoint's y axis + -
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->startYRotate(-1.0f);
+		}
+		break;
+	}
+	case'a': {
+		// scale
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->startIncrease(0.001f);
+		}
+		break;
+	}
+	case'A': {
+		// scale
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->startDecrease(0.001f);
+		}
+		break;
+	}
+	case'b': {
+		// 원점에 대한 확대/축소
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->startIncrease(0.001f, true);
+		}
+		break;
+	}
+	case'B': {
+		// 원점에 대한 확대/축소
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->startDecrease(0.001f, true);
 		}
 		break;
 	}
