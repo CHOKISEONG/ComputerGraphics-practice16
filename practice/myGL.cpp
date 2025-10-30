@@ -13,6 +13,7 @@ MyGL* MyGL::my = nullptr;
 /// </summary>
 std::vector<PolygonShape*> axis; // x,y,z 축
 std::vector<PolygonShape*> shapes;				 // 큐브
+std::vector<PolygonShape*> orgShapes;
 
 float d = 0.3f; // 큐브의 초기 반지름
 float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
@@ -169,7 +170,7 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		// rotate zeroPoint's y axis + -
 		for (int i{}; i < shapes.size(); ++i)
 		{
-			shapes[i]->startYRotate(1.0f);
+			shapes[i]->startYRotate(0.0001f);
 		}
 		break;
 	}
@@ -177,7 +178,7 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		// rotate zeroPoint's y axis + -
 		for (int i{}; i < shapes.size(); ++i)
 		{
-			shapes[i]->startYRotate(-1.0f);
+			shapes[i]->startYRotate(-0.0001f);
 		}
 		break;
 	}
@@ -185,7 +186,7 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		// scale
 		for (int i{}; i < shapes.size(); ++i)
 		{
-			shapes[i]->startIncrease(0.001f);
+			shapes[i]->startIncrease(0.001f, false);
 		}
 		break;
 	}
@@ -193,7 +194,7 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		// scale
 		for (int i{}; i < shapes.size(); ++i)
 		{
-			shapes[i]->startDecrease(0.001f);
+			shapes[i]->startDecrease(0.001f, false);
 		}
 		break;
 	}
@@ -231,6 +232,10 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	}
 	case's': {
 		//초기화
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			*shapes[i] = std::move(*orgShapes[i]);
+		}
 		break;
 	}
 	case 'q':
@@ -340,10 +345,15 @@ void MyGL::run(int argc, char** argv)
 	axis[2]->setColor(0.0f, 0.0f, 1.0f);
 	
 	shapes.push_back(new PolygonShape(PolygonType::CUBE, cubePos));
+	orgShapes.push_back(new PolygonShape(PolygonType::CUBE, cubePos));
 	shapes[0]->move(-0.5f, 0.0f);
+	orgShapes[0]->move(-0.5f, 0.0f);
 
 	shapes.push_back(new PolygonShape(PolygonType::SQUAREPYRAMID, pyramidPos));
+	orgShapes.push_back(new PolygonShape(PolygonType::SQUAREPYRAMID, pyramidPos));
 	shapes[1]->move(0.5f, 0.0f);
+	orgShapes[1]->move(0.5f, 0.0f);
+	
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);

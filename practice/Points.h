@@ -37,5 +37,5 @@ public:
 	void erase();
 
 	virtual void draw(GLuint shaderProgram) const override;
-	virtual void move(float x, float y) override;
+	void move(float x, float y, float z = 0.0f);
 };

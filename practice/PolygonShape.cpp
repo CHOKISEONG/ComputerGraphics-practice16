@@ -1,21 +1,8 @@
 #include "PolygonShape.h"
 
-//PolygonShape::PolygonShape() // ±âº»Àº Á¤À°°¢Çü
-//{
-//	
-//	slope = 0.0f;
-//	r = 1.0f;
-//	polygonType = PolygonType::POLYGON;
-//	moved = 0.0f;
-//	std::fill(drawingIdx, drawingIdx + 12, true);
-//
-//	setMidpoint(0.0f, 0.0f);
-//	setRegularHexagon();
-//	initBuffer();
-//}
-
 PolygonShape::PolygonShape(PolygonType type, const float* f)
 {
+	setMidpoint(0.0f, 0.0f, 0.0f);
 	std::fill(drawingIdx, drawingIdx + 12, true);
 	if (type == PolygonType::LINE)
 	{
@@ -23,8 +10,6 @@ PolygonShape::PolygonShape(PolygonType type, const float* f)
 
 		polygonType = PolygonType::LINE;
 
-
-		setMidpoint(0.0f, 0.0f);
 		add(f[0], f[1], f[2]);
 		add(f[3], f[4], f[5]);
 	}
@@ -42,7 +27,6 @@ PolygonShape::PolygonShape(PolygonType type, const float* f)
 		index = { 0,1,2,0,2,3 };
 		polygonType = PolygonType::RECTSHAPE;
 
-		setMidpoint(0.0f, 0.0f);
 		add(f[0], f[1], f[2]);
 		add(f[3], f[4], f[5]);
 		add(f[6], f[7], f[8]);
@@ -57,8 +41,7 @@ PolygonShape::PolygonShape(PolygonType type, const float* f)
 			0,3,2,0,3,2,
 		};
 		polygonType = PolygonType::SQUAREPYRAMID;
-
-		setMidpoint(0.0f, 0.0f);
+		
 		for (int i{}; i < 15; i += 3)
 		{
 			add(f[0 + i], f[1 + i], f[2 + i]);
@@ -82,7 +65,7 @@ PolygonShape::PolygonShape(PolygonType type, const float* f)
 			4, 1, 0,
 		};
 		polygonType = CUBE;
-		setMidpoint(0.0f, 0.0f);
+		
 		for (int i{}; i < 24; i += 3)
 		{
 			add(f[0 + i], f[1 + i], f[2 + i]);
@@ -91,20 +74,19 @@ PolygonShape::PolygonShape(PolygonType type, const float* f)
 	initBuffer();
 }
 
-PolygonShape::PolygonShape(std::vector<float>& v) {
-	positions = v;
-	initBuffer();
-}
-
 PolygonShape::PolygonShape(const PolygonShape& other)
 	: vao(other.vao)
 	, ebo(other.ebo)
 	, positions(other.positions) // std::vector´Â ±íÀº º¹»çµÊ
+	, colors(other.colors)
 	, index(other.index)
 	, moveSpeed(other.moveSpeed)
 	, polygonType(other.polygonType)
 {
-	midpoint[0] = other.midpoint[0]; midpoint[1] = other.midpoint[1];
+	std::fill(drawingIdx, drawingIdx + 12, true);
+	midpoint[0] = other.midpoint[0]; 
+	midpoint[1] = other.midpoint[1];
+	midpoint[2] = other.midpoint[2];
 	initBuffer();
 }
 
@@ -160,10 +142,11 @@ void PolygonShape::setColor(const float r, const float g, const float b)
 	updateVbo();
 }
 
-void PolygonShape::setMidpoint(const float x, const float y)
+void PolygonShape::setMidpoint(const float x, const float y, const float z)
 {
 	midpoint[0] = x;
 	midpoint[1] = y;
+	midpoint[2] = z;
 
 	updateVbo();
 }
@@ -204,6 +187,8 @@ void PolygonShape::update()
 	revolution();
 	scaling();
 	scalingByOrigin();
+
+	updateVbo();
 }
 
 /// <summary>
@@ -211,9 +196,28 @@ void PolygonShape::update()
 /// </summary>
 void PolygonShape::rotation()
 {
-	
 	if (rotateSpeed[0] == 0.0f && rotateSpeed[1] == 0.0f) return;
+	
+	for (int i{}; i < positions.size(); i += 3)
+	{
+		glm::vec4 myVec(positions[i + 0], positions[i + 1], positions[i + 2], 1.0f);
+		glm::mat4 transMatrix1 = glm::mat4(1.0f);
+		transMatrix1 = glm::translate(transMatrix1, glm::vec3(-midpoint[0], -midpoint[1], -midpoint[2]));
+		myVec = transMatrix1 * myVec;
 
+		glm::mat4 rotMatrix = glm::mat4(1.0f);
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(rotateSpeed[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(rotateSpeed[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+		myVec = rotMatrix * myVec;
+
+		glm::mat4 transMatrix2 = glm::mat4(1.0f);
+		transMatrix2 = glm::translate(transMatrix2, glm::vec3(midpoint[0], midpoint[1], midpoint[2]));
+		myVec = transMatrix2 * myVec;
+
+		positions[i + 0] = myVec.x;
+		positions[i + 1] = myVec.y;
+		positions[i + 2] = myVec.z;
+	}
 }
 
 /// <summary>
@@ -221,7 +225,17 @@ void PolygonShape::rotation()
 /// </summary>
 void PolygonShape::revolution()
 {
-	if (isYRotate) return;
+	if (!isYRotate) return;
+
+	theta += moveSpeed;
+
+	for (int i{}; i < positions.size(); i += 3)
+	{
+		float x = positions[i + 0];
+		float z = positions[i + 2];
+		positions[i + 0] = x * glm::cos(theta) + z * glm::sin(theta);
+		positions[i + 2] = x * glm::sin(-theta) + z * glm::cos(theta);
+	}
 }
 
 /// <summary>
@@ -229,7 +243,30 @@ void PolygonShape::revolution()
 /// </summary>
 void PolygonShape::scaling()
 {
-	if (increaseSpeed == 0.0f) return;
+	if (increaseSpeed == 0.0f || increasedAmount > 0.5f || increasedAmount < -0.5f) return;
+	std::cout << "iA1= " << increasedAmount << "\n";
+	for (int i{}; i < positions.size(); i += 3)
+	{
+		glm::vec4 myVec(positions[i + 0], positions[i + 1], positions[i + 2], 1.0f);
+		glm::mat4 transMatrix1 = glm::mat4(1.0f);
+		transMatrix1 = glm::translate(transMatrix1, glm::vec3(-midpoint[0], -midpoint[1], -midpoint[2]));
+		myVec = transMatrix1 * myVec;
+
+		glm::mat4 scaleMatrix = glm::mat4(1.0f);
+		float increaseRatio = 1.0f + increaseSpeed;
+		scaleMatrix = glm::scale(scaleMatrix, glm::vec3(increaseRatio, increaseRatio, increaseRatio));
+		myVec = scaleMatrix * myVec;
+
+		glm::mat4 transMatrix2 = glm::mat4(1.0f);
+		transMatrix2 = glm::translate(transMatrix2, glm::vec3(midpoint[0], midpoint[1], midpoint[2]));
+		myVec = transMatrix2 * myVec;
+
+		positions[i + 0] = myVec.x;
+		positions[i + 1] = myVec.y;
+		positions[i + 2] = myVec.z;
+	}
+
+	increasedAmount += increaseSpeed;
 }
 
 /// <summary>
@@ -237,8 +274,38 @@ void PolygonShape::scaling()
 /// </summary>
 void PolygonShape::scalingByOrigin()
 {
-	if (isIncreaseOrigin) return;
+	if (!isIncreaseOrigin) return;
+	std::cout << "iA2= " << increasedAmount2 << "\n";
+	if (increaseSpeed == 0.0f || increasedAmount2 > 0.5f || increasedAmount2 < -0.5f) return;
+
+	for (int i{}; i < positions.size(); i += 3)
+	{
+		glm::vec4 myVec(positions[i + 0], positions[i + 1], positions[i + 2], 1.0f);
+
+		glm::mat4 scaleMatrix = glm::mat4(1.0f);
+		float increaseRatio = 1.0f + increaseSpeed;
+		scaleMatrix = glm::scale(scaleMatrix, glm::vec3(increaseRatio, increaseRatio, increaseRatio));
+		myVec = scaleMatrix * myVec;
+
+		positions[i + 0] = myVec.x;
+		positions[i + 1] = myVec.y;
+		positions[i + 2] = myVec.z;
+	}
+
+	glm::vec4 myVec(midpoint[0], midpoint[1], midpoint[2], 1.0f);
+
+	glm::mat4 scaleMatrix = glm::mat4(1.0f);
+	float increaseRatio = 1.0f + increaseSpeed;
+	scaleMatrix = glm::scale(scaleMatrix, glm::vec3(increaseRatio, increaseRatio, increaseRatio));
+	myVec = scaleMatrix * myVec;
+
+	midpoint[0] = myVec.x;
+	midpoint[1] = myVec.y;
+	midpoint[2] = myVec.z;
+
+	increasedAmount2 += increaseSpeed;
 }
+
 void PolygonShape::draw(GLuint shaderProgram) const
 {
 	glBindVertexArray(vao);
@@ -261,14 +328,16 @@ void PolygonShape::draw(GLuint shaderProgram) const
 	glBindVertexArray(0);	
 }
 
-void PolygonShape::move(float x, float y)
+void PolygonShape::move(float x, float y, float z)
 {
 	midpoint[0] += x;
 	midpoint[1] += y;
+	midpoint[2] += z;
 	for (int i{}; i < static_cast<int>(positions.size()); i += 3)
 	{
 		positions[i] += x;
 		positions[i + 1] += y;
+		positions[i + 2] += z;
 	}
 
 	updateVbo();

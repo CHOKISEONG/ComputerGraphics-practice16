@@ -27,21 +27,23 @@ class PolygonShape : public ShapeManager
     std::vector<unsigned int> index;
     bool drawingIdx[12]{};          // true인 면만 그리는 용도
 
-    float midpoint[2];              // 도형의 중심점
+    float midpoint[3];              // 도형의 중심점
     unsigned short polygonType = 0; // 도형의 타입          
-    float moveSpeed = 0.0f;
+    float moveSpeed = 0.001f;
 
     // 실습 18용 변수
     bool canMove = false;   // 움직일 수 있는지 체크
     float rotateSpeed[2]{}; // x,y 자전하는지 체크
     bool isYRotate = false; // y축 공전하는지 체크
     float increaseSpeed = 0.0f; // 확대/축소 속도
+    float increasedAmount = 0.0f; // 자신에 대해서 확대/축소된 양
+    float increasedAmount2 = 0.0f; // 원점에 대해서 확대/축소된 양
     bool isIncreaseOrigin = false; // 확대/축소가 원점에 대한 확대/축소인지 체크
+    float theta = 0.0f; // 공전량
 
 public:
     //PolygonShape();
     PolygonShape(PolygonType type, const float* f);
-    PolygonShape(std::vector<float>& v);
     PolygonShape(const PolygonShape& other);
     ~PolygonShape();
 
@@ -53,7 +55,7 @@ public:
 
     void setColor(const float r, const float g, const float b);
     void setPos(std::vector<float> p) { positions = p; updateVbo(); }
-    void setMidpoint(const float x, const float y);
+    void setMidpoint(const float x, const float y, const float z);
     
     void drawAll() { std::fill(drawingIdx, drawingIdx + 12, true); }
     void drawNone() { std::fill(drawingIdx, drawingIdx + 12, false); }
@@ -66,12 +68,24 @@ public:
 
     void startMove() { canMove = true; }
     void stopMove() { canMove = false; }
-    bool getCanMove() { if (canMove) std::cout << "can move!\n";  return canMove; }
+    bool getCanMove() { return canMove; }
 
     void changeSpeed(float xSpeed, float ySpeed) { rotateSpeed[0] = xSpeed; rotateSpeed[1] = ySpeed; }
-    void startYRotate(float ySpeed) { rotateSpeed[1] = ySpeed; isYRotate = true; }
-    void startIncrease(float speed, bool isOrigin) { increaseSpeed = speed; if (isOrigin) isIncreaseOrigin = true; }
-    void startDecrease(float speed, bool isOrigin) { increaseSpeed = -speed; if (isOrigin) isIncreaseOrigin = true; }
+    void startYRotate(float speed) { isYRotate = true; moveSpeed = speed; }
+    void startIncrease(float speed, bool isOrigin = false) 
+    { 
+        isIncreaseOrigin = isOrigin;
+        if (isOrigin == false || increasedAmount < -0.5f) increasedAmount = -0.5f;
+        if (isOrigin == true || increasedAmount2 < -0.5f) increasedAmount2 = -0.5f;
+        increaseSpeed = speed; 
+    }
+    void startDecrease(float speed, bool isOrigin = false) 
+    { 
+        isIncreaseOrigin = isOrigin;
+        if (isOrigin == false || increasedAmount > 0.5f) increasedAmount = 0.5f;
+        if (isOrigin == true || increasedAmount2 > 0.5f) increasedAmount2 = 0.5f;
+        increaseSpeed = -speed; 
+    }
 
     void rotation();
     void revolution();
@@ -84,5 +98,5 @@ public:
     void add(const float x, const float y, const float z);
 
     virtual void draw(GLuint shaderProgram) const override;
-    virtual void move(float x, float y) override;
+    void move(float x, float y, float z = 0.0f);
 };

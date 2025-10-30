@@ -91,11 +91,12 @@ void Points::draw(GLuint shaderProgram) const
 	glBindVertexArray(0);
 }
 
-void Points::move(float x, float y)
+void Points::move(float x, float y, float z)
 {
 	for (size_t i = 0; i < verticles.size(); i += 3) {
 		verticles[i] += x;
 		verticles[i + 1] += y;
+		verticles[i + 2] += z;
 	}
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
