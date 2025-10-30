@@ -15,7 +15,7 @@ std::vector<PolygonShape*> axis; // x,y,z 축
 std::vector<PolygonShape*> shapes;				 // 큐브
 std::vector<PolygonShape*> orgShapes;
 
-float d = 0.3f; // 큐브의 초기 반지름
+float d = 0.2f; // 큐브의 초기 반지름
 float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
 					,d,d,-d,-d,d,-d,-d,-d,-d,d,-d,-d };
 float pyramidPos[15]{ 0.0f,0.5f,0.0f
@@ -170,7 +170,7 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		// rotate zeroPoint's y axis + -
 		for (int i{}; i < shapes.size(); ++i)
 		{
-			shapes[i]->startYRotate(0.0001f);
+			shapes[i]->startYRotate(0.01f);
 		}
 		break;
 	}
@@ -178,7 +178,7 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		// rotate zeroPoint's y axis + -
 		for (int i{}; i < shapes.size(); ++i)
 		{
-			shapes[i]->startYRotate(-0.0001f);
+			shapes[i]->startYRotate(-0.01f);
 		}
 		break;
 	}
@@ -228,6 +228,10 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	}
 	case 'c': {
 		// 두 도형을 다른거로 바꾸기
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->change();
+		}
 		break;
 	}
 	case's': {

@@ -19,7 +19,7 @@ std::mt19937 gen(rd());
 std::uniform_real_distribution<float> dis(-0.05f, 0.05f);
 std::uniform_real_distribution<float> udis(0.0f, 0.05f);
 std::uniform_real_distribution<float> zeroToOne(0.0f, 1.0f);
-std::uniform_real_distribution<float> randPos(-1.0f,1.0f);
+std::uniform_real_distribution<float> randPos(0.0f,0.3f);
 std::uniform_real_distribution<float> randRadian(0.0f, 2*PI);
 std::uniform_int_distribution<> zeroOrOne(0, 1);
 std::uniform_int_distribution<> zeroToFour(0, 4);

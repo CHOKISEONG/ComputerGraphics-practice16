@@ -227,15 +227,18 @@ void PolygonShape::revolution()
 {
 	if (!isYRotate) return;
 
-	theta += moveSpeed;
-
-	for (int i{}; i < positions.size(); i += 3)
+	for (int i = 0; i < positions.size(); i += 3)
 	{
 		float x = positions[i + 0];
 		float z = positions[i + 2];
-		positions[i + 0] = x * glm::cos(theta) + z * glm::sin(theta);
-		positions[i + 2] = x * glm::sin(-theta) + z * glm::cos(theta);
+		positions[i + 0] = x * glm::cos(moveSpeed) - z * glm::sin(moveSpeed);
+		positions[i + 2] = x * glm::sin(moveSpeed) + z * glm::cos(moveSpeed);
 	}
+
+	float x = midpoint[0];
+	float z = midpoint[2];
+	midpoint[0] = x * glm::cos(moveSpeed) - z * glm::sin(moveSpeed);
+	midpoint[2] = x * glm::sin(moveSpeed) + z * glm::cos(moveSpeed);
 }
 
 /// <summary>
@@ -304,6 +307,41 @@ void PolygonShape::scalingByOrigin()
 	midpoint[2] = myVec.z;
 
 	increasedAmount2 += increaseSpeed;
+}
+
+void PolygonShape::change()
+{
+	if (polygonType == CUBE)
+	{
+		float cubePos[24]{ randPos(gen),randPos(gen),randPos(gen),-randPos(gen),randPos(gen),randPos(gen)
+			,-randPos(gen),-randPos(gen),randPos(gen),randPos(gen),-randPos(gen),randPos(gen)
+			,randPos(gen),randPos(gen),-randPos(gen),-randPos(gen),randPos(gen),-randPos(gen)
+			,-randPos(gen),-randPos(gen),-randPos(gen),randPos(gen),-randPos(gen),-randPos(gen) };
+		colors.clear();
+		for (int i{}; i < 24; ++i)
+		{
+			positions[i] = cubePos[i];
+			colors.push_back(zeroToOne(gen));
+		}
+		setMidpoint(0.0f, 0.0f, 0.0f);
+		move(-0.5f, 0.0f);
+	}
+	else if (polygonType == SQUAREPYRAMID)
+	{
+		float pyramidPos[15]{ 0.0f,randPos(gen) + 0.2f,0.0f
+			,randPos(gen),-randPos(gen),randPos(gen)
+			,-randPos(gen),-randPos(gen),randPos(gen)
+			,-randPos(gen),-randPos(gen),-randPos(gen)
+			,randPos(gen),-randPos(gen),-randPos(gen) };
+		colors.clear();
+		for (int i{}; i < 15; ++i)
+		{
+			positions[i] = pyramidPos[i];
+			colors.push_back(zeroToOne(gen));
+		}
+		setMidpoint(0.0f, 0.0f, 0.0f);
+		move(0.5f, 0.0f);
+	}
 }
 
 void PolygonShape::draw(GLuint shaderProgram) const

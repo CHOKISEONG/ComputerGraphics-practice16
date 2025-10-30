@@ -29,7 +29,7 @@ class PolygonShape : public ShapeManager
 
     float midpoint[3];              // 도형의 중심점
     unsigned short polygonType = 0; // 도형의 타입          
-    float moveSpeed = 0.001f;
+    float moveSpeed = 0.0f;
 
     // 실습 18용 변수
     bool canMove = false;   // 움직일 수 있는지 체크
@@ -39,7 +39,6 @@ class PolygonShape : public ShapeManager
     float increasedAmount = 0.0f; // 자신에 대해서 확대/축소된 양
     float increasedAmount2 = 0.0f; // 원점에 대해서 확대/축소된 양
     bool isIncreaseOrigin = false; // 확대/축소가 원점에 대한 확대/축소인지 체크
-    float theta = 0.0f; // 공전량
 
 public:
     //PolygonShape();
@@ -91,6 +90,8 @@ public:
     void revolution();
     void scaling();
     void scalingByOrigin();
+
+    void change();
     // 실습 18용 함수들
 
 
