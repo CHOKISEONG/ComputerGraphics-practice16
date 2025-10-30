@@ -50,43 +50,119 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case'1': {
-		//왼쪽 객체만 출력
+		// 왼쪽 객체만 적용
+		cube->startMove();
+		pyramid->stopMove();
 		break;
 	}
 	case'2': {
-		// show right object
+		// 오른쪽 객체만 적용
+		cube->stopMove();
+		pyramid->startMove();
 		break;
 	}
 	case'3': {
-		// show both object
+		// 둘 다 적용
+		cube->startMove();
+		pyramid->startMove();
 		break;
 	}
-	case'x':case'X': {
-		// rotate object's x axis + -
+	case'x':
+	{
+		// rotate object's x axis +
+		cube->changeSpeed(1.0f, 0.0f);
+		pyramid->changeSpeed(1.0f, 0.0f);
 		break;
 	}
-	case'y':case'Y': {
-		// rotate object's y axis + -
+	case'X': 
+	{
+		// rotate object's x axis -
+		cube->changeSpeed(-1.0f, 0.0f);
+		pyramid->changeSpeed(-1.0f, 0.0f);
 		break;
 	}
-	case'r':case'R': {
+	case'y':
+	{
+		// rotate object's y axis +
+		cube->changeSpeed(0.0f, 1.0f);
+		pyramid->changeSpeed(0.0f, 1.0f);
+		break;
+	}
+	case'Y': 
+	{
+		// rotate object's y axis -
+		cube->changeSpeed(0.0f, -1.0f);
+		pyramid->changeSpeed(0.0f, -1.0f);
+		break;
+	}
+	case'r': 
+	{
 		// rotate zeroPoint's y axis + -
+		cube->startYRotate(1.0f);
+		pyramid->startYRotate(1.0f);
 		break;
 	}
-	case'a':case'A': {
+	case'R': {
+		// rotate zeroPoint's y axis + -
+		cube->startYRotate(-1.0f);
+		pyramid->startYRotate(-1.0f);
+		break;
+	}
+	case'a': {
 		// scale
+		cube->startIncrease(0.001f);
+		pyramid->startIncrease(0.001f);
 		break;
 	}
-	case'b':case'B': {
+	case'A': {
+		// scale
+		cube->startDecrease(0.001f);
+		pyramid->startDecrease(0.001f);
+		break;
+	}
+	case'b': {
 		// 원점에 대한 확대/축소
+		cube->startDecrease(0.001f, true);
+		pyramid->startDecrease(0.001f, true);
 		break;
 	}
-	case'd':case'D': {
+	case'B': {
+		// 원점에 대한 확대/축소
+		cube->startDecrease(0.001f, false);
+		pyramid->startDecrease(0.001f, false);
+		break;
+	}
+	case'd': {
 		// move objects's x
+		if (cube->canMove())
+			cube->move(-0.05f, 0.0f);
+		if (pyramid->canMove())
+			cube->move(-0.05f, 0.0f);
 		break;
 	}
-	case'e':case'E': {
+	case'D': {
+		// move objects's x
+		if (cube->canMove())
+			cube->move(0.05f, 0.0f);
+		if (pyramid->canMove())
+			cube->move(0.05f, 0.0f);
+		break;
+	}
+	case'e': {
 		// move object's y
+		if (cube->canMove())
+			cube->move(0.0f, -0.05f);
+		if (pyramid->canMove())
+			cube->move(0.0f, -0.05f);
+
+		break;
+	}
+	case'E': {
+		// move object's y
+		if (cube->canMove())
+			cube->move(0.0f, 0.05f);
+		if (pyramid->canMove())
+			cube->move(0.0f, 0.05f);
 		break;
 	}
 	case 't': {
