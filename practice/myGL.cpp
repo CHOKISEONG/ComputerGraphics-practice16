@@ -28,6 +28,8 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 20.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+bool isOrtho = false; // 직각투영/원근투영 변환용
+
 void MyGL::reShape(int w, int h)
 {
 	my->height = h;
@@ -48,12 +50,103 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	static bool isRotateR = false;
 	switch (key)
 	{
-	case '9':
+	case'p':
+	{
+		isOrtho = true;
+		break;
+	}
+	case'P':
+	{
+		isOrtho = false;
+		break;
+	}
+	case'm':
 	{
 		for (auto& o : obj)
 		{
-			o->move(1.0f, 0.0f, 0.0f);
+			o->toSolid();
 		}
+		break;
+	}
+	case'M':
+	{
+		for (auto& o : obj)
+		{
+			o->toWire();
+		}
+		break;
+	}
+	case'w':
+	{
+		for (auto& o : obj)
+		{
+			o->move(0.0f,0.5f,0.0f, true);
+		}
+		break;
+	}
+	case'a':
+	{
+		for (auto& o : obj)
+		{
+			o->move(-0.5f, 0.0f, 0.0f, true);
+		}
+		break;
+	}
+	case's':
+	{
+		for (auto& o : obj)
+		{
+			o->move(0.0f, -0.5f, 0.0f, true);
+		}
+		break;
+	}
+	case'd':
+	{
+		for (auto& o : obj)
+		{
+			o->move(0.5f, 0.0f, 0.0f, true);
+		}
+		break;
+	}
+	case'+':
+	{
+		for (auto& o : obj)
+		{
+			o->move(0.0f, 0.0f, 0.5f, true);
+		}
+		break;
+	}
+	case'-':
+	{
+		for (auto& o : obj)
+		{
+			o->move(0.0f, 0.0f, -0.5f, true);
+		}
+		break;
+	}
+	case'y':
+	{
+		for (auto& o : obj)
+		{
+			o->resizeOrbit(0.01f);
+		}
+		break;
+	}
+	case'Y':
+	{
+		for (auto& o : obj)
+		{
+			o->resizeOrbit(-0.01f);
+		}
+		break;
+	}
+	case'z':
+	{
+
+		break;
+	}
+	case'Z':
+	{
 
 		break;
 	}
@@ -116,7 +209,11 @@ void MyGL::draw()
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 	glm::mat4 projection = glm::mat4(1.0f);
-	projection = glm::perspective(glm::radians(45.0f), (float)my->width / (float)my->height, 0.1f, 200.0f);
+
+	if (isOrtho)
+		projection = glm::ortho(-20.0f,20.0f, -20.0f,20.0f, -50.0f,50.0f);
+	else
+		projection = glm::perspective(glm::radians(45.0f), (float)my->width / (float)my->height, 0.1f, 200.0f);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	for (int i{}; i < obj.size(); ++i)

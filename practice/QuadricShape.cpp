@@ -16,17 +16,24 @@ void QuadricShape::draw(GLuint shaderProgram) const
 {
 	glUseProgram(shaderProgram);
 	
+	if (!isSolidDraw)
+	{
+		gluQuadricDrawStyle(obj, GLU_LINE);
+		gluQuadricDrawStyle(moon, GLU_LINE);
+	}
+	else
+	{
+		gluQuadricDrawStyle(obj, GLU_FILL);
+		gluQuadricDrawStyle(moon, GLU_FILL);
+	}
+
 	for (int i{}; i < orbit.size(); ++i)
 	{
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, orbit[i].pos);
 		unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-		//gluQuadricDrawStyle(obj, GLU_LINE);
-		//gluQuadricNormals(_obj, GLU_SMOOTH);
-		//gluQuadricOrientation(_obj, GLU_OUTSIDE);
-		gluSphere(orbit[i].obj, 0.04f, slices, stacks);
+		gluSphere(orbit[i].obj, orbitRadius, slices, stacks);
 	}
 
 	if (type == QuadricType::SPHERE)
@@ -35,10 +42,6 @@ void QuadricShape::draw(GLuint shaderProgram) const
 		model = glm::translate(model, pos);
 		unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-		//gluQuadricDrawStyle(obj, GLU_LINE);
-		//gluQuadricNormals(_obj, GLU_SMOOTH);
-		//gluQuadricOrientation(_obj, GLU_OUTSIDE);
 
 		GLuint colorLoc = glGetUniformLocation(shaderProgram, "obj_color");
 		glUniform3f(colorLoc, color[0], color[1], color[2]);
@@ -49,9 +52,6 @@ void QuadricShape::draw(GLuint shaderProgram) const
 		modelLoc = glGetUniformLocation(shaderProgram, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-		//gluQuadricDrawStyle(obj, GLU_LINE);
-		//gluQuadricNormals(_obj, GLU_SMOOTH);
-		//gluQuadricOrientation(_obj, GLU_OUTSIDE);
 		colorLoc = glGetUniformLocation(shaderProgram, "obj_color");
 		glUniform3f(colorLoc, mColor[0], mColor[1], mColor[2]);
 		gluSphere(moon, radius/2, slices, stacks);
@@ -95,10 +95,12 @@ void QuadricShape::revolution()
 	mPos = pos + mRotated;
 }
 
-void QuadricShape::move(float x, float y, float z)
+void QuadricShape::move(float x, float y, float z, bool changeTargetPos)
 {
 	pos += glm::vec3(x, y, z);
 	mPos += glm::vec3(x, y, z);
+	if (changeTargetPos)
+		targetPos += glm::vec3(x, y, z);
 }
 
 
