@@ -149,6 +149,7 @@
     <ClCompile Include="myGL.cpp" />
     <ClCompile Include="Points.cpp" />
     <ClCompile Include="PolygonShape.cpp" />
+    <ClCompile Include="QuadricShape.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.glsl" />
@@ -159,6 +160,7 @@
     <ClInclude Include="MyGL.h" />
     <ClInclude Include="Points.h" />
     <ClInclude Include="PolygonShape.h" />
+    <ClInclude Include="QuadricShape.h" />
     <ClInclude Include="Shape.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

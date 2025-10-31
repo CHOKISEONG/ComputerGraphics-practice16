@@ -16,7 +16,8 @@ enum PolygonType
     PENTAGON,
     POLYGON,
     SQUAREPYRAMID,
-    CUBE
+    CUBE,
+    SPHERE
 };
 
 class PolygonShape : public ShapeManager

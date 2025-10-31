@@ -11,18 +11,16 @@ MyGL* MyGL::my = nullptr;
 /// <summary>
 /// 그려질 도형들을 모아놓는 곳
 /// </summary>
-std::vector<PolygonShape*> axis; // x,y,z 축
-std::vector<PolygonShape*> shapes;				 // 큐브
-std::vector<PolygonShape*> orgShapes;
+std::vector<PolygonShape*> obj; // GLU 모델들
 
-float d = 0.2f; // 큐브의 초기 반지름
-float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
-					,d,d,-d,-d,d,-d,-d,-d,-d,d,-d,-d };
-float pyramidPos[15]{ 0.0f,0.5f,0.0f
-			,0.2f,-0.2f,0.2f
-			,-0.2f,-0.2f,0.2f
-			,-0.2f,-0.2f,-0.2f
-			,0.2f,-0.2f,-0.2f };
+//float d = 0.2f; // 큐브의 초기 반지름
+//float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
+//					,d,d,-d,-d,d,-d,-d,-d,-d,d,-d,-d };
+//float pyramidPos[15]{ 0.0f,0.5f,0.0f
+//			,0.2f,-0.2f,0.2f
+//			,-0.2f,-0.2f,0.2f
+//			,-0.2f,-0.2f,-0.2f
+//			,0.2f,-0.2f,-0.2f };
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -36,8 +34,6 @@ void MyGL::reShape(int w, int h)
 }
 void MyGL::idle()
 {
-	for (auto& s : shapes)
-		s->update();
 	glutPostRedisplay();
 }
 
@@ -55,203 +51,6 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	{
 		cameraPos.z -= 0.1;
 		return;
-	}
-	case'1': {
-		// 왼쪽 객체만 적용
-		std::cout << "press 1\n";
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			if (i % 2)
-				shapes[i]->stopMove();
-			else
-				shapes[i]->startMove();
-		}
-		break;
-	}
-	case'2': {
-		// 오른쪽 객체만 적용
-		std::cout << "press 2\n";
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			if (i % 2)
-				shapes[i]->startMove();
-			else
-				shapes[i]->stopMove();
-		}
-		break;
-	}
-	case'3': {
-		// 둘 다 적용
-		std::cout << "press 3\n";
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->startMove();
-		}
-		break;
-	}
-	case'd': {
-		// move objects's x
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			if (shapes[i]->getCanMove())
-				shapes[i]->move(-0.05f, 0.0f);
-		}
-		break;
-	}
-	case'D': {
-		// move objects's x
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			if (shapes[i]->getCanMove())
-				shapes[i]->move(0.05f, 0.0f);
-		}
-		break;
-	}
-	case'e': {
-		// move object's y
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			if (shapes[i]->getCanMove())
-				shapes[i]->move(0.0f, -0.05f);
-		}
-		break;
-	}
-	case'E': {
-		// move object's y
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			if (shapes[i]->getCanMove())
-				shapes[i]->move(0.0f, 0.05f);
-		}
-		break;
-	}
-	case'x':
-	{
-		// rotate object's x axis +
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->changeSpeed(1.0f, 0.0f);
-		}
-		break;
-	}
-	case'X': 
-	{
-		// rotate object's x axis -
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->changeSpeed(-1.0f, 0.0f);
-		}
-		break;
-	}
-	case'y':
-	{
-		// rotate object's y axis +
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->changeSpeed(0.0f, 1.0f);
-		}
-		break;
-	}
-	case'Y': 
-	{
-		// rotate object's y axis -
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->changeSpeed(0.0f, -1.0f);
-		}
-		break;
-	}
-	case'r': 
-	{
-		// rotate zeroPoint's y axis + -
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->startYRotate(0.01f);
-		}
-		break;
-	}
-	case'R': {
-		// rotate zeroPoint's y axis + -
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->startYRotate(-0.01f);
-		}
-		break;
-	}
-	case'a': {
-		// scale
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->startIncrease(0.001f, false);
-		}
-		break;
-	}
-	case'A': {
-		// scale
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->startDecrease(0.001f, false);
-		}
-		break;
-	}
-	case'b': {
-		// 원점에 대한 확대/축소
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->startIncrease(0.001f, true);
-		}
-		break;
-	}
-	case'B': {
-		// 원점에 대한 확대/축소
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->startDecrease(0.001f, true);
-		}
-		break;
-	}
-	case 't': {
-		// 두 도형이 원점을 통과하며 상대방의 자리로 이동하는 애니메이션
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->stopAll();
-		}
-		shapes[0]->startMoveT(shapes[1]->getMidpoint());
-		shapes[1]->startMoveT(shapes[0]->getMidpoint());
-		break;
-	}
-	case 'u': {
-		// 두 도형이 한개는 위로 한개는 아래로 이동하면서 상대방의 자리로 이동하는 애니메이션
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->stopAll();
-		}
-		shapes[0]->startMoveU(shapes[1]->getMidpoint());
-		shapes[1]->startMoveU(shapes[0]->getMidpoint());
-		break;
-	}
-	case 'v': {
-		// 뭔말인지 모름
-		shapes[0]->startMoveV(true);
-		shapes[1]->startMoveV(false);
-		break;
-	}
-	case 'c': {
-		// 두 도형을 다른거로 바꾸기
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			shapes[i]->change();
-		}
-		break;
-	}
-	case's': {
-		//초기화
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			*shapes[i] = std::move(*orgShapes[i]);
-			shapes[i]->updateVbo();
-		}
-		break;
 	}
 	case 'q':
 		exit(0);
@@ -298,30 +97,25 @@ void MyGL::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(my->shaderProgramID);
 
-	glm::mat4 projection = glm::mat4(1.0f);
-	projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
-	projection = glm::translate(projection, glm::vec3(0.0, 0.0, -2.0));
-	unsigned int projectionLocation = glGetUniformLocation(my->shaderProgramID, "projection_transform");
-	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
-
-	glm::mat4 view = glm::mat4(1.0f);
-	static float tmp = 5.0f;
-	tmp -= 0.1f;
-	cameraPos = glm::vec3(0.0f, 0.0f, tmp);
-	view = glm::lookAt(cameraPos, cameraDirection, cameraUp);
-	unsigned int viewLocation = glGetUniformLocation(my->shaderProgramID, "view_transform");
-	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+	unsigned int modelLoc = glGetUniformLocation(my->shaderProgramID, "model");
+	unsigned int viewLoc = glGetUniformLocation(my->shaderProgramID, "view");
+	unsigned int projLoc = glGetUniformLocation(my->shaderProgramID, "projection");
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
 	model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0, 1.0, 0.0));
- 	unsigned int modelLocation = glGetUniformLocation(my->shaderProgramID, "model_transform");
-	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-	for (const auto& l : axis)
-		l->draw(my->shaderProgramID);
-	for (const auto& s : shapes)
-		s->draw(my->shaderProgramID);
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::lookAt(cameraPos, cameraDirection, cameraUp);
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+	glm::mat4 projection = glm::mat4(1.0f);
+	projection = glm::perspective(glm::radians(45.0f), (float)my->width / (float)my->height, 0.1f, 200.0f);
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+	for (const auto& o : obj)
+		o->draw(my->shaderProgramID);
 
 	glutSwapBuffers();
 }
@@ -361,28 +155,8 @@ void MyGL::run(int argc, char** argv)
 		std::cout << "GLEW Initialized\n";
 
 	make_shaderProgram();
-
-	// x y z 축 생성
-	float xLine[6]{ -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f };
-	float yLine[6]{ 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
-	float zLine[6]{ 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f };
-	axis.push_back(new PolygonShape(PolygonType::LINE, xLine));
-	axis.push_back(new PolygonShape(PolygonType::LINE, yLine));
-	axis.push_back(new PolygonShape(PolygonType::LINE, zLine));
-	axis[0]->setColor(1.0f, 0.0f, 0.0f);
-	axis[1]->setColor(0.0f, 1.0f, 0.0f);
-	axis[2]->setColor(0.0f, 0.0f, 1.0f);
 	
-	shapes.push_back(new PolygonShape(PolygonType::CUBE, cubePos));
-	orgShapes.push_back(new PolygonShape(PolygonType::CUBE, cubePos));
-	shapes[0]->move(-0.5f, 0.0f);
-	orgShapes[0]->move(-0.5f, 0.0f);
-
-	shapes.push_back(new PolygonShape(PolygonType::SQUAREPYRAMID, pyramidPos));
-	orgShapes.push_back(new PolygonShape(PolygonType::SQUAREPYRAMID, pyramidPos));
-	shapes[1]->move(0.5f, 0.0f);
-	orgShapes[1]->move(0.5f, 0.0f);
-	
+	obj.push_back(new PolygonShape(gluNewQuadric(), 1.5f));
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
