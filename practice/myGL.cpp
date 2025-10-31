@@ -24,7 +24,7 @@ float pyramidPos[15]{ 0.0f,0.5f,0.0f
 			,-0.2f,-0.2f,-0.2f
 			,0.2f,-0.2f,-0.2f };
 
-glm::vec3 cameraPos = glm::vec3(0.0, 0.0f, 5.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -299,12 +299,16 @@ void MyGL::draw()
 	glUseProgram(my->shaderProgramID);
 
 	glm::mat4 projection = glm::mat4(1.0f);
-	projection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, -100.0f, 100.0f);
+	projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+	projection = glm::translate(projection, glm::vec3(0.0, 0.0, -2.0));
 	unsigned int projectionLocation = glGetUniformLocation(my->shaderProgramID, "projection_transform");
 	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
 	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::lookAt(cameraPos, cameraPos + cameraDirection, cameraUp);
+	static float tmp = 5.0f;
+	tmp -= 0.1f;
+	cameraPos = glm::vec3(0.0f, 0.0f, tmp);
+	view = glm::lookAt(cameraPos, cameraDirection, cameraUp);
 	unsigned int viewLocation = glGetUniformLocation(my->shaderProgramID, "view_transform");
 	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
 
