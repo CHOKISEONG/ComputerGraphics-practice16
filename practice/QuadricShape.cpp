@@ -6,6 +6,9 @@ QuadricShape::QuadricShape(GLUquadric* o,QuadricType type, GLdouble rad, GLint s
 	pos.x = 0.0f;
 	pos.y = 0.0f;
 	pos.z = 0.0f;
+	color[0] = zeroToOne(gen);
+	color[1] = zeroToOne(gen);
+	color[2] = zeroToOne(gen);
 }
 
 void QuadricShape::draw(GLuint shaderProgram) const
@@ -22,6 +25,9 @@ void QuadricShape::draw(GLuint shaderProgram) const
 		gluQuadricDrawStyle(obj, GLU_LINE);
 		//gluQuadricNormals(_obj, GLU_SMOOTH);
 		//gluQuadricOrientation(_obj, GLU_OUTSIDE);
+
+		GLuint colorLoc = glGetUniformLocation(shaderProgram, "obj_color");
+		glUniform3f(colorLoc, color[0], color[1], color[2]);
 		gluSphere(obj, radius, slices, stacks);
 	}
 		

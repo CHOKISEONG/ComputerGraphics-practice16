@@ -14,7 +14,9 @@ class QuadricShape : public ShapeManager
 {
     QuadricType type; // 어떤 타입의 도형인지
 
-    glm::vec3 pos;
+    glm::vec3 pos;    // 위치
+    GLfloat color[3]; // 색상
+
     GLUquadric* obj; // 물체
     GLdouble radius; // 반지름
     GLint slices;    // 경도 개수

@@ -13,6 +13,7 @@ MyGL* MyGL::my = nullptr;
 /// 그려질 도형들을 모아놓는 곳
 /// </summary>
 std::vector<QuadricShape*> obj; // GLU 모델들
+std::vector<GLfloat*> color;
 
 //float d = 0.2f; // 큐브의 초기 반지름
 //float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
@@ -124,8 +125,10 @@ void MyGL::draw()
 	projection = glm::perspective(glm::radians(45.0f), (float)my->width / (float)my->height, 0.1f, 200.0f);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-	for (const auto& o : obj)
-		o->draw(my->shaderProgramID);
+	for (int i{}; i < obj.size(); ++i)
+	{
+		obj[i]->draw(my->shaderProgramID);
+	}
 
 	glutSwapBuffers();
 }
@@ -167,7 +170,9 @@ void MyGL::run(int argc, char** argv)
 	make_shaderProgram();
 	
 	obj.push_back(new QuadricShape(gluNewQuadric(), QuadricType::SPHERE, 1.5f, 20, 20));
+	color.push_back(new float[3]{zeroToOne(gen),zeroToOne(gen),zeroToOne(gen)});
 	obj.push_back(new QuadricShape(gluNewQuadric(), QuadricType::SPHERE));
+	color.push_back(new float[3] {zeroToOne(gen), zeroToOne(gen), zeroToOne(gen)});
 	obj[1]->move(0.0f, 1.0f);
 
 	glEnable(GL_CULL_FACE);
