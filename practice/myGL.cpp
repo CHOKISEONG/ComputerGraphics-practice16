@@ -24,7 +24,7 @@ std::vector<GLfloat*> color;
 //			,-0.2f,-0.2f,-0.2f
 //			,0.2f,-0.2f,-0.2f };
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 15.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 20.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -174,12 +174,15 @@ void MyGL::run(int argc, char** argv)
 	color.push_back(new float[3] {zeroToOne(gen), zeroToOne(gen), zeroToOne(gen)});
 	color.push_back(new float[3] {zeroToOne(gen), zeroToOne(gen), zeroToOne(gen)});
 	color.push_back(new float[3] {zeroToOne(gen), zeroToOne(gen), zeroToOne(gen)});
-	obj[1]->move(3.0f, 0.0f);
+	obj[1]->move(5.0f, 0.0f);
 	obj[2]->move(-3.0f, -3.0f);
-	obj[3]->move(3.0f, -3.0f);
+	obj[3]->move(3.5f, -3.5f);
 	obj[1]->setAxis();
 	obj[2]->setAxis();
 	obj[3]->setAxis();
+	obj[1]->makeChildren();
+	obj[2]->makeChildren();
+	obj[3]->makeChildren();
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
