@@ -4,6 +4,7 @@
 #include "global.h"
 
 #include "PolygonShape.h"
+#include "QuadricShape.h"
 #include "Points.h"
 
 MyGL* MyGL::my = nullptr;
@@ -11,7 +12,7 @@ MyGL* MyGL::my = nullptr;
 /// <summary>
 /// 그려질 도형들을 모아놓는 곳
 /// </summary>
-std::vector<PolygonShape*> obj; // GLU 모델들
+std::vector<QuadricShape*> obj; // GLU 모델들
 
 //float d = 0.2f; // 큐브의 초기 반지름
 //float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
@@ -45,12 +46,21 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	case '7':
 	{
 		cameraPos.z += 0.1;
-		return;
+		break;
 	}
 	case '8':
 	{
 		cameraPos.z -= 0.1;
-		return;
+		break;
+	}
+	case '9':
+	{
+		for (auto& o : obj)
+		{
+			o->move(1.0f, 0.0f, 0.0f);
+		}
+
+		break;
 	}
 	case 'q':
 		exit(0);
@@ -156,7 +166,9 @@ void MyGL::run(int argc, char** argv)
 
 	make_shaderProgram();
 	
-	obj.push_back(new PolygonShape(gluNewQuadric(), 1.5f));
+	obj.push_back(new QuadricShape(gluNewQuadric(), QuadricType::SPHERE, 1.5f, 20, 20));
+	obj.push_back(new QuadricShape(gluNewQuadric(), QuadricType::SPHERE));
+	obj[1]->move(0.0f, 1.0f);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);

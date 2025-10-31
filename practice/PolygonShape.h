@@ -3,10 +3,6 @@
 #include "Shape.h"
 #include "global.h"
 
-#include <gl/glew.h>
-#include <gl/glm/glm.hpp>
-
-
 enum PolygonType
 {
     POINTTYPE,
@@ -17,7 +13,6 @@ enum PolygonType
     POLYGON,
     SQUAREPYRAMID,
     CUBE,
-    SPHERE
 };
 
 class PolygonShape : public ShapeManager

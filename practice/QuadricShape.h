@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Shape.h"
-
-#include <gl/glew.h>
-#include <gl/glm/glm.hpp>
+#include "global.h"
 
 enum QuadricType
 {
@@ -14,14 +12,16 @@ enum QuadricType
 
 class QuadricShape : public ShapeManager
 {
-    GLuint vao = 0, vbo[2] = { 0,0 }, ebo = 0;
-    GLdouble radius;
+    QuadricType type; // 어떤 타입의 도형인지
+
+    glm::vec3 pos;
+    GLUquadric* obj; // 물체
+    GLdouble radius; // 반지름
+    GLint slices;    // 경도 개수
+    GLint stacks;    // 위도 개수
 
 public:
-    //PolygonShape();
-    QuadricShape(QuadricShape type, const float* f);
-    QuadricShape(const QuadricShape& other);
-    ~QuadricShape();
+    QuadricShape(GLUquadric* o, QuadricType type, GLdouble rad = 1.0f, GLint slices = 10, GLint stacks = 10);
 
     virtual void draw(GLuint shaderProgram) const override;
     void move(float x, float y, float z = 0.0f);
