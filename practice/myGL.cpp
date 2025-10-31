@@ -24,11 +24,9 @@ float pyramidPos[15]{ 0.0f,0.5f,0.0f
 			,-0.2f,-0.2f,-0.2f
 			,0.2f,-0.2f,-0.2f };
 
-char trigger;
-bool whatToDraw = false;
-
-float tmp = 0.0f;
-unsigned long long pMoved = 0;
+glm::vec3 cameraPos = glm::vec3(0.0, 0.0f, 5.0f);
+glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 void MyGL::reShape(int w, int h)
 {
@@ -46,19 +44,17 @@ void MyGL::idle()
 void MyGL::keyboard(unsigned char key, int x, int y)
 {
 	static bool isRotateR = false;
-	trigger = key;
 	switch (key)
 	{
-	case '0': {
-		for (int i{}; i < shapes.size(); ++i)
-		{
-			std::cout << i << "µµÇü ÁÂÇ¥\n";
-			std::vector<float> tmp = shapes[i]->getPos();
-			for (const auto& i : tmp)
-				std::cout << i << " ";
-			std::cout << std::endl;
-		}
-		break;
+	case '7':
+	{
+		cameraPos.z += 0.1;
+		return;
+	}
+	case '8':
+	{
+		cameraPos.z -= 0.1;
+		return;
 	}
 	case'1': {
 		// ¿ÞÂÊ °´Ã¼¸¸ Àû¿ë
@@ -301,6 +297,16 @@ void MyGL::draw()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(my->shaderProgramID);
+
+	glm::mat4 projection = glm::mat4(1.0f);
+	projection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, -100.0f, 100.0f);
+	unsigned int projectionLocation = glGetUniformLocation(my->shaderProgramID, "projection_transform");
+	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::lookAt(cameraPos, cameraPos + cameraDirection, cameraUp);
+	unsigned int viewLocation = glGetUniformLocation(my->shaderProgramID, "view_transform");
+	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
