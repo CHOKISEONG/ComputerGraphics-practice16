@@ -142,12 +142,18 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	}
 	case'z':
 	{
-
+		for (auto& o : obj)
+		{
+			o->rotateAxisZ(0.01f);
+		}
 		break;
 	}
 	case'Z':
 	{
-
+		for (auto& o : obj)
+		{
+			o->rotateAxisZ(-0.01f);
+		}
 		break;
 	}
 	case 'q':

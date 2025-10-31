@@ -12,6 +12,13 @@ QuadricShape::QuadricShape(GLUquadric* o,QuadricType type, GLdouble rad)
 	if (zeroOrOne(gen)) speed = -speed;
 }
 
+void QuadricShape::rotateAxisZ(float theta)
+{
+	glm::vec3 tmp = axis;
+	axis.x = glm::cos(theta) * tmp.x - glm::sin(theta) * tmp.y;
+	axis.y = glm::sin(theta) * tmp.x + glm::cos(theta) * tmp.y;
+}
+
 void QuadricShape::draw(GLuint shaderProgram) const
 {
 	glUseProgram(shaderProgram);
@@ -89,7 +96,7 @@ void QuadricShape::revolution()
 	glm::vec3 rotated = glm::vec3(rotMat * glm::vec4(dir, 1.0f));
 	pos = targetPos + rotated;
 
-	mAmount += -2 * speed ;
+	mAmount += -2 * speed;
 	glm::mat4 mRotMat = glm::rotate(glm::mat4(1.0f), mAmount, glm::normalize(axis));
 	glm::vec3 mRotated = glm::vec3(mRotMat * glm::vec4(mDir, 1.0f));
 	mPos = pos + mRotated;

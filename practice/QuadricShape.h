@@ -59,6 +59,8 @@ public:
     void toWire() { isSolidDraw = false; }
     void resizeOrbit(float amount) { orbitRadius += amount; }
 
+    void rotateAxisZ(float theta);
+
     virtual void draw(GLuint shaderProgram) const override;
     void move(float x, float y, float z = 0.0f, bool changeTargetPos = false);
 };
