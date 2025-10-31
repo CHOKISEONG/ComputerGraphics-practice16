@@ -15,6 +15,19 @@ QuadricShape::QuadricShape(GLUquadric* o,QuadricType type, GLdouble rad)
 void QuadricShape::draw(GLuint shaderProgram) const
 {
 	glUseProgram(shaderProgram);
+	
+	for (int i{}; i < orbit.size(); ++i)
+	{
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, orbit[i].pos);
+		unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+		//gluQuadricDrawStyle(obj, GLU_LINE);
+		//gluQuadricNormals(_obj, GLU_SMOOTH);
+		//gluQuadricOrientation(_obj, GLU_OUTSIDE);
+		gluSphere(orbit[i].obj, 0.04f, slices, stacks);
+	}
 
 	if (type == QuadricType::SPHERE)
 	{
@@ -59,6 +72,17 @@ void QuadricShape::revolution()
 {
 	/// 할 일 : 궤도 그리기
 	if (!isRevolution) return;
+
+	timer += 0.1f;
+	if (timer >= 1.0f)
+	{
+		timer = 0.0f;
+		orbit.push_back(basicInfo(gluNewQuadric(), pos));
+	}
+	if (orbit.size() > 7)
+	{
+		orbit.erase(orbit.begin());
+	}
 
 	glm::vec3 dir = pos - targetPos;
 	glm::mat4 rotMat = glm::rotate(glm::mat4(1.0f), speed, glm::normalize(axis));

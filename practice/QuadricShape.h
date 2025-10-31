@@ -10,6 +10,12 @@ enum QuadricType
     DISK
 };
 
+struct basicInfo
+{
+    GLUquadric* obj;
+    glm::vec3 pos;
+};
+
 class QuadricShape : public ShapeManager
 {
     QuadricType type; // 어떤 타입의 도형인지
@@ -19,10 +25,13 @@ class QuadricShape : public ShapeManager
     GLfloat color[3];                               // 행성 색상
 
     GLUquadric* moon;                               // 달
+    glm::vec3 mPos = glm::vec3(0.0f, 0.0f, 0.0f);
+    GLfloat mColor[3];
     glm::vec3 mDir = mPos - pos;
     float mAmount = 0.0f;
-    glm::vec3 mPos = glm::vec3(0.0f, 0.0f, 0.0f);   // 달 위치
-    GLfloat mColor[3];                             // 달 색상
+    
+    std::vector<basicInfo> orbit; // 궤도
+    float timer = 0.0f;
 
     GLdouble radius;      // 반지름
     GLint slices = 50;    // 경도 개수
