@@ -30,7 +30,20 @@ void QuadricShape::draw(GLuint shaderProgram) const
 		glUniform3f(colorLoc, color[0], color[1], color[2]);
 		gluSphere(obj, radius, slices, stacks);
 	}
-		
+}
+
+void QuadricShape::revolution()
+{
+	/// 할 일 : 궤도 그리기
+	if (!isRevolution) return;
+
+	glm::vec3 axis(0.0f, 1.0f, 0.0f);
+	glm::vec3 relative = pos - targetPos;
+
+	glm::mat4 rotMat = glm::rotate(glm::mat4(1.0f), speed, glm::normalize(axis));
+	glm::vec3 rotated = glm::vec3(rotMat * glm::vec4(relative, 1.0f));
+
+	pos = targetPos + rotated;
 }
 
 void QuadricShape::move(float x, float y, float z)

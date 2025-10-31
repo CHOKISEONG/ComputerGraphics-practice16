@@ -36,6 +36,10 @@ void MyGL::reShape(int w, int h)
 }
 void MyGL::idle()
 {
+	for (auto& o : obj)
+	{
+		o->revolution();
+	}
 	glutPostRedisplay();
 }
 
@@ -173,7 +177,7 @@ void MyGL::run(int argc, char** argv)
 	color.push_back(new float[3]{zeroToOne(gen),zeroToOne(gen),zeroToOne(gen)});
 	obj.push_back(new QuadricShape(gluNewQuadric(), QuadricType::SPHERE));
 	color.push_back(new float[3] {zeroToOne(gen), zeroToOne(gen), zeroToOne(gen)});
-	obj[1]->move(0.0f, 1.0f);
+	obj[1]->move(3.0f, 1.0f);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
