@@ -187,6 +187,9 @@ void PolygonShape::update()
 	revolution();
 	scaling();
 	scalingByOrigin();
+	moveT(1.0f);
+	moveU();
+	moveV();
 
 	updateVbo();
 }
@@ -307,6 +310,96 @@ void PolygonShape::scalingByOrigin()
 	midpoint[2] = myVec.z;
 
 	increasedAmount2 += increaseSpeed;
+}
+
+void PolygonShape::startMoveT(const float* dir)
+{
+	stopTUV();
+	direction = glm::vec4(dir[0] - midpoint[0], dir[1] - midpoint[1], dir[2] - midpoint[2], 0.0f);
+	tuvSpeed = 0.005f;
+	tuvAmount = 0.0f;
+}
+
+void PolygonShape::moveT(float times)
+{
+	if (tuvSpeed == 0.0f) return;
+
+	if (tuvAmount > 1.0f)
+	{
+		tuvAmount = 0.99f;
+		tuvSpeed = -0.005f;
+		return;
+	}
+	else if (tuvAmount < 0.0f)
+	{
+		tuvAmount = 0.01f;
+		tuvSpeed = 0.005f;
+		return;
+	}
+	move(direction.x * tuvSpeed * times, direction.y * tuvSpeed * times, direction.z * tuvSpeed * times);
+	tuvAmount += tuvSpeed;
+}
+
+void PolygonShape::startMoveU(const float* dir)
+{
+	stopTUV();
+	direction = glm::vec4(dir[0] - midpoint[0], dir[1] - midpoint[1], dir[2] - midpoint[2], 0.0f);
+	tuvSpeed2 = 0.005f;
+	tuvAmount2 = 0.0f;
+}
+
+void PolygonShape::moveU()
+{
+	if (tuvSpeed2 == 0.0f) return;
+
+	if (tuvAmount2 < 0.25f)
+	{
+		if (polygonType == CUBE) move(0.0f, 0.01f, 0.0f);
+		else move(0.0f, -0.01f, 0.0f);
+	}
+	else if (tuvAmount2 < 0.5f)
+	{
+		move(direction.x * tuvSpeed2 * 4, direction.y * tuvSpeed2 * 4, direction.z * tuvSpeed2 * 4);
+	}
+	else if (tuvAmount2 < 0.75f)
+	{
+		if (polygonType == CUBE) move(0.0f, -0.01f, 0.0f);
+		else move(0.0f, 0.01f, 0.0f);
+	}
+	else if (tuvAmount2 < 1.0f)
+	{
+		move(direction.x * -tuvSpeed2 * 4, direction.y * -tuvSpeed2 * 4, direction.z * -tuvSpeed2 * 4);
+	}
+	else
+	{
+		tuvAmount2 = 0.0f;
+	}
+
+	tuvAmount2 += tuvSpeed2;
+}
+
+void PolygonShape::startMoveV(bool isIncrease)
+{
+	stopAll();
+	stopTUV();
+	if (isIncrease)
+	{
+		changeSpeed(1.0f, 0.0f);
+		startIncrease(0.001f);
+	}
+	else
+	{
+		changeSpeed(-1.0f, 0.0f);
+		startDecrease(0.001f);
+	}
+		
+	startYRotate(0.01f);
+	
+
+}
+
+void PolygonShape::moveV()
+{
 }
 
 void PolygonShape::change()

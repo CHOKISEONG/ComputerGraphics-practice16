@@ -216,14 +216,28 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	}
 	case 't': {
 		// 두 도형이 원점을 통과하며 상대방의 자리로 이동하는 애니메이션
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->stopAll();
+		}
+		shapes[0]->startMoveT(shapes[1]->getMidpoint());
+		shapes[1]->startMoveT(shapes[0]->getMidpoint());
 		break;
 	}
 	case 'u': {
 		// 두 도형이 한개는 위로 한개는 아래로 이동하면서 상대방의 자리로 이동하는 애니메이션
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->stopAll();
+		}
+		shapes[0]->startMoveU(shapes[1]->getMidpoint());
+		shapes[1]->startMoveU(shapes[0]->getMidpoint());
 		break;
 	}
 	case 'v': {
 		// 뭔말인지 모름
+		shapes[0]->startMoveV(true);
+		shapes[1]->startMoveV(false);
 		break;
 	}
 	case 'c': {
@@ -239,6 +253,7 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		for (int i{}; i < shapes.size(); ++i)
 		{
 			*shapes[i] = std::move(*orgShapes[i]);
+			shapes[i]->updateVbo();
 		}
 		break;
 	}
