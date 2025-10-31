@@ -24,7 +24,7 @@ std::vector<GLfloat*> color;
 //			,-0.2f,-0.2f,-0.2f
 //			,0.2f,-0.2f,-0.2f };
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 15.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -48,16 +48,6 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	static bool isRotateR = false;
 	switch (key)
 	{
-	case '7':
-	{
-		cameraPos.z += 0.1;
-		break;
-	}
-	case '8':
-	{
-		cameraPos.z -= 0.1;
-		break;
-	}
 	case '9':
 	{
 		for (auto& o : obj)
@@ -173,11 +163,23 @@ void MyGL::run(int argc, char** argv)
 
 	make_shaderProgram();
 	
-	obj.push_back(new QuadricShape(gluNewQuadric(), QuadricType::SPHERE, 1.5f, 20, 20));
+	// 중심 구
+	obj.push_back(new QuadricShape(gluNewQuadric(), QuadricType::SPHERE, 1.5f));
 	color.push_back(new float[3]{zeroToOne(gen),zeroToOne(gen),zeroToOne(gen)});
+
+	// 중심 구를 기준으로 공전하는 행성 3개
+	obj.push_back(new QuadricShape(gluNewQuadric(), QuadricType::SPHERE));
+	obj.push_back(new QuadricShape(gluNewQuadric(), QuadricType::SPHERE));
 	obj.push_back(new QuadricShape(gluNewQuadric(), QuadricType::SPHERE));
 	color.push_back(new float[3] {zeroToOne(gen), zeroToOne(gen), zeroToOne(gen)});
-	obj[1]->move(3.0f, 1.0f);
+	color.push_back(new float[3] {zeroToOne(gen), zeroToOne(gen), zeroToOne(gen)});
+	color.push_back(new float[3] {zeroToOne(gen), zeroToOne(gen), zeroToOne(gen)});
+	obj[1]->move(3.0f, 0.0f);
+	obj[2]->move(-3.0f, -3.0f);
+	obj[3]->move(3.0f, -3.0f);
+	obj[1]->setAxis();
+	obj[2]->setAxis();
+	obj[3]->setAxis();
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
