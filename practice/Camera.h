@@ -1,0 +1,23 @@
+#pragma once
+
+#include "global.h"
+
+class Camera
+{
+private:
+	glm::vec3 pos = glm::vec3(0.0f, 5.0f, 5.0f);			// 위치
+	glm::vec3 direction = glm::vec3(0.0f,0.0f,0.0f);	// 바라보는 방향
+	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);			// 업벡터
+
+	float fovy = 45.0f;		// 뷰잉 각도
+	float width = 1200.0f;	// 폭
+	float height = 800.0f;	// 높이
+	float zNear = 0.1f;		// 가까운 클리핑 평면까지의 거리
+	float zFar = 100.0f;	// 먼	 클리핑 평면까지의 거리
+
+public:
+	void settingCamera(GLuint shaderProgram);
+
+	void changeWidthHeight(float w, float h) { width = w, height = h; }
+	void camMove(float x, float y, float z) { pos.x += x; pos.y += y; pos.z += z; }
+};

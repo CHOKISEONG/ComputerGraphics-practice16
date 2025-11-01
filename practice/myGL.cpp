@@ -3,12 +3,14 @@
 #include "MyGL.h"
 #include "global.h"
 
+#include "Camera.h"
 #include "PolygonShape.h"
 #include "QuadricShape.h"
 #include "Points.h"
 
 MyGL* MyGL::my = nullptr;
 
+Camera* cam;
 /// <summary>
 /// 그려질 도형들을 모아놓는 곳
 /// </summary>
@@ -33,12 +35,15 @@ void MyGL::idle()
 	}
 	glutPostRedisplay();
 }
-
 void MyGL::keyboard(unsigned char key, int x, int y)
 {
 	static bool isRotateR = false;
 	switch (key)
 	{
+	case'z':
+	{
+		break;
+	}
 	case 'q':
 		exit(0);
 	default: break;
@@ -65,29 +70,12 @@ void MyGL::specialKeyboard(int key, int x, int y)
 	}
 	glutPostRedisplay();
 }
-
 void MyGL::draw()
 {
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(my->shaderProgramID);
-
-	unsigned int modelLoc = glGetUniformLocation(my->shaderProgramID, "model_transform");
-	unsigned int viewLoc = glGetUniformLocation(my->shaderProgramID, "view");
-	unsigned int projLoc = glGetUniformLocation(my->shaderProgramID, "projection");
-
-	glm::mat4 model = glm::mat4(1.0f);
-	//model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	//model = glm::rotate(model, glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::lookAt(cameraPos, cameraDirection, cameraUp);
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-	glm::mat4 projection = glm::mat4(1.0f);
-	projection = glm::perspective(glm::radians(45.0f), (float)my->width / (float)my->height, 0.1f, 200.0f);
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	cam->settingCamera(my->shaderProgramID);
 
 	for (int i{}; i < obj.size(); ++i)
 	{
@@ -96,7 +84,6 @@ void MyGL::draw()
 
 	glutSwapBuffers();
 }
-
 //void MyGL::passiveMotion(int x, int y)
 //{
 //	pvx = (2.0f * x - my->width) / my->width;
@@ -132,6 +119,8 @@ void MyGL::run(int argc, char** argv)
 		std::cout << "GLEW Initialized\n";
 
 	make_shaderProgram();
+
+	cam = new Camera();
 
 	obj.push_back(new QuadricShape(CYLINDER, 50.0f, 0.1f));
 	obj[0]->rotateX(90.0f);
