@@ -17,7 +17,13 @@ void Camera::settingCamera(GLuint shaderProgram)
 void Camera::update()
 {
 	if (isRotating)
-		rotate(rotateSpeed, false);
+	{
+		if (isRotateSelf)
+			rotate(rotateSpeed, false);
+		else
+			rotateFromView(rotateSpeed, false);
+	}
+		
 }
 
 void Camera::rotate(float theta, bool rotateX)

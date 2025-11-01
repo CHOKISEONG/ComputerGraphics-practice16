@@ -16,6 +16,7 @@ private:
 	float zFar = 100.0f;	// 먼	 클리핑 평면까지의 거리
 
 	bool isRotating = false;
+	bool isRotateSelf = false;
 	float rotateSpeed = 0.0f;
 public:
 	void settingCamera(GLuint shaderProgram);
@@ -27,6 +28,7 @@ public:
 	// rotateX가 true면 x축회전, false면 y축회전으로 함
 	void rotate(float theta, bool rotateX); 
 	void rotateFromView(float theta, bool rotateX);
-	void rotateStartY(float speed) { isRotating = true; rotateSpeed = speed; }
+	void rotateStart(float speed) { isRotating = true; isRotateSelf = false; rotateSpeed = speed; }
+	void rotateStartY(float speed) { isRotating = true; isRotateSelf = true; rotateSpeed = speed; }
 	void rotateStop() { isRotating = false; rotateSpeed = 0.0f; }
 };

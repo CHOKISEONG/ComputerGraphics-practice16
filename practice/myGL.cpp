@@ -95,6 +95,11 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		cam->rotateFromView(5.0f, false);
 		break;
 	}
+	case 'a':
+	{
+		cam->rotateStart(1.0f);
+		break;
+	}
 	case'o':
 	{
 		cam->rotateStop();
