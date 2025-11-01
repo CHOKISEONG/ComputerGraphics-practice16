@@ -29,6 +29,7 @@ void MyGL::reShape(int w, int h)
 }
 void MyGL::idle()
 {
+	cam->update();
 	for (auto& o : obj)
 	{
 		o->update();
@@ -54,47 +55,49 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	static bool isRotateR = false;
 	switch (key)
 	{
-	case'w':
-	{
-		cam->move(0.0f, 1.0f);
-		break;
-	}
-	case'a':
-	{
-		cam->move(-1.0f, 0.0f);
-		break;
-	}
-	case's':
-	{
-		cam->move(0.0f, -1.0f);
-		break;
-	}
-	case'd':
-	{
-		cam->move(1.0f, 0.0f);
-		break;
-	}
-	case'e':
+	case'z':
 	{
 		cam->move(0.0f, 0.0f, 1.0f);
 		break;
 	}
-	case'E':
+	case'Z':
 	{
 		cam->move(0.0f, 0.0f, -1.0f);
 		break;
 	}
+	case'x':
+	{
+		cam->move(1.0f, 0.0f);
+		break;
+	}
+	case'X':
+	{
+		cam->move(-1.0f, 0.0f);
+		break;
+	}
+	case'y':
+	{
+		cam->rotateStartY(1.0f);
+		break;
+	}
+	case'Y':
+	{
+		cam->rotateStartY(-1.0f);
+		break;
+	}
 	case'r':
 	{
-		cam->rotate(5.0f, false);
+		cam->rotateFromView(5.0f, false);
 		break;
 	}
 	case'R':
 	{
+		cam->rotateFromView(5.0f, false);
 		break;
 	}
-	case'z':
+	case'o':
 	{
+		cam->rotateStop();
 		break;
 	}
 	case 'q':
@@ -166,7 +169,7 @@ void MyGL::run(int argc, char** argv)
 	obj.push_back(new QuadricShape(CYLINDER));
 
 	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 
 	glutDisplayFunc(MyGL::draw);
 	glutReshapeFunc(MyGL::reShape);
