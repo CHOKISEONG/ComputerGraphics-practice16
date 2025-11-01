@@ -20,7 +20,6 @@ QuadricShape::~QuadricShape()
 
 void QuadricShape::update()
 {
-	rotateX(0.001f);
 	return;
 }
 
@@ -36,9 +35,9 @@ void QuadricShape::draw2(GLuint shaderProgram, DrawType drawType) const
 	// 중심 위치 결정
 	glm::mat4 model(1.0f);
 	model = glm::translate(model, pos);
-	model = glm::rotate(model, angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::rotate(model, angle_z, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(angle_x), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(angle_y), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(angle_z), glm::vec3(0.0f, 0.0f, 1.0f));
 	unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 

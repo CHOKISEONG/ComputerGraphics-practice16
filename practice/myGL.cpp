@@ -134,6 +134,7 @@ void MyGL::run(int argc, char** argv)
 	make_shaderProgram();
 
 	obj.push_back(new QuadricShape(CYLINDER, 50.0f, 0.1f));
+	obj[0]->rotateX(90.0f);
 	obj.push_back(new QuadricShape(CYLINDER));
 
 	glEnable(GL_CULL_FACE);
