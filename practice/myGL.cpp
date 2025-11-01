@@ -35,6 +35,20 @@ void MyGL::idle()
 	}
 	glutPostRedisplay();
 }
+void MyGL::draw()
+{
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glUseProgram(my->shaderProgramID);
+	cam->settingCamera(my->shaderProgramID);
+
+	for (int i{}; i < obj.size(); ++i)
+	{
+		obj[i]->draw2(my->shaderProgramID, DrawType::DRAW_WIRE);
+	}
+
+	glutSwapBuffers();
+}
 void MyGL::keyboard(unsigned char key, int x, int y)
 {
 	static bool isRotateR = false;
@@ -72,6 +86,7 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	}
 	case'r':
 	{
+		cam->rotate(5.0f, false);
 		break;
 	}
 	case'R':
@@ -107,20 +122,6 @@ void MyGL::specialKeyboard(int key, int x, int y)
 		break;
 	}
 	glutPostRedisplay();
-}
-void MyGL::draw()
-{
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUseProgram(my->shaderProgramID);
-	cam->settingCamera(my->shaderProgramID);
-
-	for (int i{}; i < obj.size(); ++i)
-	{
-		obj[i]->draw2(my->shaderProgramID, DRAW_WIRE);
-	}
-
-	glutSwapBuffers();
 }
 //void MyGL::passiveMotion(int x, int y)
 //{
