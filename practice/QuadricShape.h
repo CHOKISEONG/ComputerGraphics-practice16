@@ -41,9 +41,12 @@ class QuadricShape : public ShapeManager
     float angle_y = 0.0f;
     float angle_z = 0.0f;
 public:
-    QuadricShape(QuadricType type, GLdouble rad = 1.0f, GLdouble height = 5.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f);
+    QuadricShape(QuadricType type, GLdouble rad = 1.0, GLdouble height = 5.0, float x = 0.0f, float y = 0.0f, float z = 0.0f);
     ~QuadricShape();
 
+    void setColor(float r, float g, float b) { color[0] = r; color[1] = g; color[2] = b; }
+    void setColor(float* c) { color[0] = c[0]; color[1] = c[1]; color[2] = c[2]; }
+    float* getColor() { return color; }
     const glm::vec3 getPos() const { return pos; }
 
     void rotateX(float theta) { angle_x += theta; }

@@ -14,6 +14,7 @@ Camera* cam;
 /// <summary>
 /// ±×·ÁÁú µµÇüµéÀ» ¸ð¾Æ³õ´Â °÷
 /// </summary>
+QuadricShape* ground;
 std::vector<QuadricShape*> obj; // GLU ¸ðµ¨µé
 std::vector<GLfloat*> color;
 
@@ -43,9 +44,10 @@ void MyGL::draw()
 	glUseProgram(my->shaderProgramID);
 	cam->settingCamera(my->shaderProgramID);
 
+	ground->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
 	for (int i{}; i < obj.size(); ++i)
 	{
-		obj[i]->draw2(my->shaderProgramID, DrawType::DRAW_WIRE);
+		obj[i]->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
 	}
 
 	glutSwapBuffers();
@@ -117,16 +119,28 @@ void MyGL::specialKeyboard(int key, int x, int y)
 	switch (key)
 	{
 	case GLUT_KEY_UP:
-
+		for (auto& o : obj)
+		{
+			o->move(0.0f, 0.0f, -1.0f);
+		}
 		break;
 	case GLUT_KEY_DOWN:
-
+		for (auto& o : obj)
+		{
+			o->move(0.0f, 0.0f, 1.0f);
+		}
 		break;
 	case GLUT_KEY_LEFT:
-
+		for (auto& o : obj)
+		{
+			o->move(-1.0f, 0.0f, 0.0f);
+		}
 		break;
 	case GLUT_KEY_RIGHT:
-
+		for (auto& o : obj)
+		{
+			o->move(1.0f, 0.0f, 0.0f);
+		}
 		break;
 	}
 	glutPostRedisplay();
@@ -168,13 +182,35 @@ void MyGL::run(int argc, char** argv)
 	make_shaderProgram();
 
 	cam = new Camera();
+	ground = new QuadricShape(DISK, 50.0f, 0.1f);
+	ground->setColor(0.55f, 0.47f, 0.05f);
+	ground->rotateX(90.0f);
 
-	obj.push_back(new QuadricShape(CYLINDER, 50.0f, 0.1f));
-	obj[0]->rotateX(90.0f);
+	// ÅÊÅ© ¾Æ·¡ ¸öÃ¼ (idx 0~2)
 	obj.push_back(new QuadricShape(CYLINDER));
+	obj.push_back(new QuadricShape(DISK));
+	obj.push_back(new QuadricShape(DISK));
+	obj[1]->setColor(obj[0]->getColor());
+	obj[2]->setColor(obj[0]->getColor());
+	obj[1]->move(0.0f, 0.0f, 5.0f);
 
-	glEnable(GL_CULL_FACE);
-	//glEnable(GL_DEPTH_TEST);
+	// ÅÊÅ© Áß¾Ó ¸öÃ¼ (idx 3~5)
+	obj.push_back(new QuadricShape(CYLINDER, 1.0, 4.0));
+	obj.push_back(new QuadricShape(DISK));
+	obj.push_back(new QuadricShape(DISK));
+	obj[4]->setColor(obj[3]->getColor());
+	obj[5]->setColor(obj[3]->getColor());
+	obj[3]->move(0.0f, 1.5f, 0.5f);
+	obj[4]->move(0.0f, 1.5f, 0.5f);
+	obj[5]->move(0.0f, 1.5f, 4.5f);
+
+	for (auto& o : obj)
+	{
+		o->rotateZ(45.0f);
+	}
+
+	//glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 
 	glutDisplayFunc(MyGL::draw);
 	glutReshapeFunc(MyGL::reShape);
