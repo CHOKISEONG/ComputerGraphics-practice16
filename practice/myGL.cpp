@@ -40,6 +40,44 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	static bool isRotateR = false;
 	switch (key)
 	{
+	case'w':
+	{
+		cam->move(0.0f, 1.0f);
+		break;
+	}
+	case'a':
+	{
+		cam->move(-1.0f, 0.0f);
+		break;
+	}
+	case's':
+	{
+		cam->move(0.0f, -1.0f);
+		break;
+	}
+	case'd':
+	{
+		cam->move(1.0f, 0.0f);
+		break;
+	}
+	case'e':
+	{
+		cam->move(0.0f, 0.0f, 1.0f);
+		break;
+	}
+	case'E':
+	{
+		cam->move(0.0f, 0.0f, -1.0f);
+		break;
+	}
+	case'r':
+	{
+		break;
+	}
+	case'R':
+	{
+		break;
+	}
 	case'z':
 	{
 		break;

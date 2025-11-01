@@ -19,5 +19,5 @@ public:
 	void settingCamera(GLuint shaderProgram);
 
 	void changeWidthHeight(float w, float h) { width = w, height = h; }
-	void camMove(float x, float y, float z) { pos.x += x; pos.y += y; pos.z += z; }
+	void move(float x, float y, float z = 0.0f) { pos.x += x; pos.y += y; pos.z += z; }
 };
