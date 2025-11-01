@@ -10,6 +10,14 @@ enum QuadricType
     DISK
 };
 
+enum DrawType
+{
+    DRAW_SOLID,
+    DRAW_WIRE,
+    DRAW_SILHOUETTE,
+    DRAW_POINT
+};
+
 struct basicInfo
 {
     GLUquadric* obj;
@@ -24,18 +32,26 @@ class QuadricShape : public ShapeManager
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);   
     GLfloat color[3];                   
     GLdouble radius;      // 반지름
-    GLint slices = 4;    // 경도 개수
-    GLint stacks = 10;    // 위도 개수
+    GLdouble height;
+    int slices = 4;    // 경도 개수
+    int stacks = 10;    // 위도 개수
 
-    glm::vec3 axis;
+    // 각 축마다 몇 도 기울어졌는지
+    float angle_x = 0.0f;
+    float angle_y = 0.0f;
+    float angle_z = 0.0f;
 public:
-    QuadricShape(GLUquadric* o, QuadricType type, GLdouble rad = 0.5f);
+    QuadricShape(QuadricType type, GLdouble rad = 1.0f, GLdouble height = 5.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f);
+    ~QuadricShape();
 
     const glm::vec3 getPos() const { return pos; }
 
-    void rotateAxisZ(float theta);
+    void rotateX(float theta) { angle_x += theta; }
+    void rotateY(float theta) { angle_y += theta; }
+    void rotateZ(float theta) { angle_z += theta; }
 
     void update();
     virtual void draw(GLuint shaderProgram) const override;
+    void draw2(GLuint shaderProgram, DrawType drawType = DRAW_WIRE) const;
     void move(float x, float y, float z = 0.0f, bool changeTargetPos = false);
 };

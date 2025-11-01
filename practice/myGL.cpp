@@ -72,13 +72,13 @@ void MyGL::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(my->shaderProgramID);
 
-	unsigned int modelLoc = glGetUniformLocation(my->shaderProgramID, "model");
+	unsigned int modelLoc = glGetUniformLocation(my->shaderProgramID, "model_transform");
 	unsigned int viewLoc = glGetUniformLocation(my->shaderProgramID, "view");
 	unsigned int projLoc = glGetUniformLocation(my->shaderProgramID, "projection");
 
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
-	model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0, 1.0, 0.0));
+	//model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	//model = glm::rotate(model, glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 	glm::mat4 view = glm::mat4(1.0f);
@@ -91,7 +91,7 @@ void MyGL::draw()
 
 	for (int i{}; i < obj.size(); ++i)
 	{
-		obj[i]->draw(my->shaderProgramID);
+		obj[i]->draw2(my->shaderProgramID, DRAW_WIRE);
 	}
 
 	glutSwapBuffers();
@@ -133,6 +133,8 @@ void MyGL::run(int argc, char** argv)
 
 	make_shaderProgram();
 
+	obj.push_back(new QuadricShape(CYLINDER, 50.0f, 0.1f));
+	obj.push_back(new QuadricShape(CYLINDER));
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
