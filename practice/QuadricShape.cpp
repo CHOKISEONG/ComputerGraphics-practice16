@@ -19,7 +19,6 @@ QuadricShape::~QuadricShape()
 }
 
 
-
 void QuadricShape::update()
 {
 	moveT();
@@ -32,7 +31,11 @@ void QuadricShape::moveT()
 {
 	if (!isMove[0]) return;
 
-
+	if (amount_T <= 1.0f)
+	{
+		pos.z += targetPos.z * speed;
+	}
+	amount_T += speed;
 }
 void QuadricShape::moveL()
 {
@@ -72,6 +75,7 @@ void QuadricShape::draw2(GLuint shaderProgram, DrawType drawType) const
 	model = glm::rotate(model, glm::radians(angle_x), glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(angle_y), glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(angle_z), glm::vec3(0.0f, 0.0f, 1.0f));
+	
 	unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
@@ -86,7 +90,7 @@ void QuadricShape::draw2(GLuint shaderProgram, DrawType drawType) const
 
 	if (type == QuadricType::SPHERE)		
 		gluSphere(obj, radius, slices, stacks);
-	else if (type == QuadricType::CYLINDER)	
+	else if (type == QuadricType::CYLINDER)
 		gluCylinder(obj, radius, radius, height, slices, stacks);
 	else if (type == QuadricType::DISK)		
 		gluDisk(obj, 0.0, radius, slices, stacks);

@@ -49,7 +49,6 @@ void MyGL::draw()
 	{
 		obj[i]->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
 	}
-
 	glutSwapBuffers();
 }
 void MyGL::keyboard(unsigned char key, int x, int y)
@@ -59,35 +58,29 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	{
 	case't':
 	{
-		obj[3]->startT();
-		obj[4]->startT();
-		obj[5]->startT();
+		obj[1]->startT();
 		break;
 	}
 	case'l':
 	{
-		obj[6]->startL(obj[9]->getPos());
-		obj[7]->startL(obj[10]->getPos());
-		obj[8]->startL(obj[11]->getPos());
-		obj[9]->startL(obj[6]->getPos());
-		obj[10]->startL(obj[7]->getPos());
-		obj[11]->startL(obj[8]->getPos());
-		obj[12]->startL(obj[13]->getPos());
-		obj[13]->startL(obj[12]->getPos());
-		obj[14]->startL(obj[15]->getPos());
-		obj[15]->startL(obj[14]->getPos());
+		obj[2]->startL(obj[3]->getPos());
+		obj[4]->startL(obj[5]->getPos());
+		obj[6]->startL(obj[7]->getPos());
+		obj[3]->startL(obj[2]->getPos());
+		obj[5]->startL(obj[4]->getPos());
+		obj[7]->startL(obj[6]->getPos());
 		break;
 	}
 	case'g':
 	{
-		obj[12]->startG(1.0f);
-		obj[13]->startG(-1.0f);
+		obj[4]->startG();
+		obj[5]->startG();
 		break;
 	}
 	case'p':
 	{
-		obj[14]->startP(1.0f);
-		obj[15]->startP(-1.0f);
+		obj[6]->startP();
+		obj[7]->startP();
 		break;
 	}
 	case'z':
@@ -221,68 +214,47 @@ void MyGL::run(int argc, char** argv)
 	ground->setColor(0.55f, 0.47f, 0.05f);
 	ground->rotateX(90.0f);
 
-	// ÅÊÅ© ¾Æ·¡ ¸öÃ¼ (idx 0~2)
+	// ÅÊÅ© ¾Æ·¡ ¸öÃ¼
 	obj.push_back(new QuadricShape(CYLINDER));
-	obj.push_back(new QuadricShape(DISK));
-	obj.push_back(new QuadricShape(DISK));
-	obj[1]->setColor(obj[0]->getColor());
-	obj[2]->setColor(obj[0]->getColor());
-	obj[1]->move(0.0f, 0.0f, 5.0f);
+	obj[0]->move(0.0f, 0.0f, 0.0f);
 
-	// ÅÊÅ© Áß¾Ó ¸öÃ¼ (idx 3~5)
+	// ÅÊÅ© Áß¾Ó ¸öÃ¼
 	obj.push_back(new QuadricShape(CYLINDER, 0.5, 4.0));
-	obj.push_back(new QuadricShape(DISK, 0.5));
-	obj.push_back(new QuadricShape(DISK, 0.5));
-	obj[4]->setColor(obj[3]->getColor());
-	obj[5]->setColor(obj[3]->getColor());
-	obj[3]->move(0.0f, 1.0f, 0.5f);
-	obj[4]->move(0.0f, 1.0f, 0.5f);
-	obj[5]->move(0.0f, 1.0f, 4.5f);
+	obj[1]->move(0.0f, 1.0f, 0.5f);
 
-	// À§ ¸öÃ¼ 1 (idx 6~8)
+	// À§ ¸öÃ¼ 1
 	obj.push_back(new QuadricShape(CYLINDER, 1.0, 1.5));
-	obj.push_back(new QuadricShape(DISK, 1.0));
-	obj.push_back(new QuadricShape(DISK, 1.0));
-	obj[6]->move(0.0f, 2.0f, 0.5f);
-	obj[7]->move(0.0f, 2.0f, 0.5f);
-	obj[8]->move(0.0f, 2.0f, 2.0f);
+	obj[2]->move(0.0f, 2.0f, 0.5f);
 
-	// À§ ¸öÃ¼ 2 (idx 9~11)
+	// À§ ¸öÃ¼ 2
 	obj.push_back(new QuadricShape(CYLINDER, 1.0, 1.5));
-	obj.push_back(new QuadricShape(DISK, 1.0));
-	obj.push_back(new QuadricShape(DISK, 1.0));
-	obj[9]->move(0.0f, 2.0f, 3.0f);
-	obj[10]->move(0.0f, 2.0f, 3.0f);
-	obj[11]->move(0.0f, 2.0f, 4.5f);
+	obj[3]->move(0.0f, 2.0f, 3.0f);
 
-	// Æ÷½Å (idx 12, 13)
+	// Æ÷½Å 
 	obj.push_back(new QuadricShape(CYLINDER, 0.1, 3.0));
 	obj.push_back(new QuadricShape(CYLINDER, 0.1, 3.0));
-	obj[13]->setColor(obj[12]->getColor());
-	obj[12]->rotateY(-90.0f);
-	obj[13]->rotateY(-90.0f);
-	obj[12]->move(0.0f, 2.0f, 1.25f);
-	obj[13]->move(0.0f, 2.0f, 3.75f);
+	obj[5]->setColor(obj[4]->getColor());
+	obj[4]->move(0.0f, 2.0f, 1.25f);
+	obj[5]->move(0.0f, 2.0f, 3.75f);
+	obj[4]->rotateY(-90.0f);
+	obj[5]->rotateY(-90.0f);
 
-	// ±ê´ë (idx 14, 15)
+	// ±ê´ë 
 	obj.push_back(new QuadricShape(CYLINDER, 0.2, 1.5));
 	obj.push_back(new QuadricShape(CYLINDER, 0.2, 1.5));
-	obj[15]->setColor(obj[14]->getColor());
-	obj[14]->rotateX(-90.0f);
-	obj[15]->rotateX(-90.0f);
-	obj[14]->move(0.0f, 2.0f, 1.25f);
-	obj[15]->move(0.0f, 2.0f, 3.75f);
-	
-	obj[7]->setColor(obj[6]->getColor());
-	obj[8]->setColor(obj[6]->getColor());
-	obj[9]->setColor(obj[6]->getColor());
-	obj[10]->setColor(obj[6]->getColor());
-	obj[11]->setColor(obj[6]->getColor());
+	obj[6]->setColor(obj[7]->getColor());
+	obj[6]->rotateX(-90.0f);
+	obj[7]->rotateX(-90.0f);
+	obj[6]->move(0.0f, 2.0f, 1.25f);
+	obj[7]->move(0.0f, 2.0f, 3.75f);
+
 	for (auto& o : obj)
 	{
 		o->rotateZ(45.0f);
 	}
+	
 
+	obj.push_back(new QuadricShape(QuadricType::SPHERE, 0.1));
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
