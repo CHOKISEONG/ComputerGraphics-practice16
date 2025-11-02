@@ -35,6 +35,11 @@ extern int RECTCNT;
 extern float PI;
 extern float ROOT2;
 
+// 실습 21에 쓸 상자 안의 랜덤 공 좌표용
+extern std::uniform_real_distribution<float> randBallPosX;
+extern std::uniform_real_distribution<float> randBallPosY;
+extern std::uniform_real_distribution<float> randBallPosZ;
+
 enum WallDir {
 	UP = 1,
 	DOWN,

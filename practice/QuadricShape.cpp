@@ -14,6 +14,9 @@ QuadricShape::QuadricShape(QuadricType type, GLdouble rad, GLdouble height
 
 	// 처음에 실린더나 디스크 그리면 마름모처럼 그려져서 돌림
 	rotateZ(45.0f);
+
+	if (type == SPHERE)
+		setSlices(20);
 }
 
 QuadricShape::~QuadricShape()
@@ -21,58 +24,32 @@ QuadricShape::~QuadricShape()
 	gluDeleteQuadric(obj);
 }
 
+void QuadricShape::update(bool isUpdate)
+{
+	if (!isUpdate) return;
+	float outLineMin = -4.0f / ROOT2;
+	float outLineMax = 4.0f / ROOT2;
 
-void QuadricShape::update()
-{
-	moveT();
-	moveL();
-	moveG();
-	moveP();
-	return;
-}
-void QuadricShape::moveT()
-{
-	if (!isMove[0]) return;
+	if (pos.y >= outLineMin && pos.y <= outLineMax)
+	{
+		move(0.0f, accel);
+	}
+	else if (pos.y < outLineMin)
+	{
+		move(0.0f, -accel);
+		accel = 0.0f;
+		dAccel = -dAccel;
+	}
+	else if (pos.y > outLineMax)
+	{
+		move(0.0f, -accel);
+		accel = 0.0f;
+		dAccel = -dAccel;
+	}
 
-	if (amount_T <= 1.0f)
-	{
-		// T는 생각보다 코드가 많을 것 같아서 나중에 하기
-		amount_T += speed;
-	}
-	
-}
-void QuadricShape::moveL()
-{
-	if (!isMove[1]) return;
-	
-	if (amount_L <= 1.0f)
-	{
-		pos.z += targetPos.z * speed;
-		amount_L += speed;
-	}
-	
-}
-void QuadricShape::moveG()
-{
-	if (!isMove[2]) return;
+	if (accel < maxAccel) accel += dAccel;
 
-	if (-15.0f <= amount_G && amount_G <= 15.0f)
-	{
-		rotateY(speed_G);
-		amount_G += speed_G;
-	}
-	else
-	{
-		speed_G = -speed_G;
-		amount_G += speed_G;
-	}
-		
-}
-void QuadricShape::moveP()
-{
-	if (!isMove[3]) return;
-
-	rotateZ(speed_P);
+	std::cout << "accel: " << accel << ", dAccel: " << dAccel << "\n";
 }
 
 void QuadricShape::draw(GLuint shaderProgram) const

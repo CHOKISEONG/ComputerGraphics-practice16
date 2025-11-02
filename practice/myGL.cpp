@@ -22,8 +22,6 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 20.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-
-
 void MyGL::reShape(int w, int h)
 {
 	my->height = h;
@@ -33,6 +31,9 @@ void MyGL::reShape(int w, int h)
 void MyGL::idle()
 {
 	cam->update();
+
+	for (auto& ball : ball)
+		ball->update(true);
 
 	glutPostRedisplay();
 }
@@ -45,6 +46,9 @@ void MyGL::draw()
 
 	for (auto& b : box)
 		b->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
+
+	for (auto& b : ball)
+		b->draw2(my->shaderProgramID, DrawType::DRAW_WIRE);
 
 	glutSwapBuffers();
 }
@@ -84,23 +88,10 @@ void MyGL::passiveMotion(int x, int y)
 	float crx = (2.0f * x - my->width) / my->width;
 	float cry = -(2.0f * y - my->height) / my->height;
 
-	cam->move((crx - pvx) * 3, (cry - pvy) * 3);
+	cam->move((crx - pvx) * 10, (cry - pvy) * 10);
 
 	pvx = crx;
 	pvy = cry;
-}
-void MyGL::motion(int x, int y)
-{
-	// 마우스 좌표를 openGL 좌표계로 변환
-	float crx = (2.0f * x - my->width) / my->width;
-	float cry = -(2.0f * y - my->height) / my->height;
-
-	
-
-	pvx = crx;
-	pvy = cry;
-
-	glutPostRedisplay();
 }
 void MyGL::run(int argc, char** argv)
 {
@@ -130,34 +121,39 @@ void MyGL::run(int argc, char** argv)
 	// 뒤쪽 면
 	box.push_back(new QuadricShape(QuadricType::DISK, radius));
 
-	// 왼쪽 면
+	// 오른쪽 면
 	box.push_back(new QuadricShape(QuadricType::DISK, 5.0));
 	box[1]->move(ROOT2* radius/2, 0.0f, ROOT2 * radius/2);
-	box[1]->rotateY(90.0f);
+	box[1]->setColor(0.5f, 0.5f, 0.5f);
+	box[1]->rotateY(-90.0f);
 
 	// 위쪽 면
 	box.push_back(new QuadricShape(QuadricType::DISK, 5.0));
 	box[2]->rotateX(90.0f);
 	box[2]->move(0.0f, radius / ROOT2, ROOT2 * radius / 2);
 
-	// 오른쪽 면
+	// 왼쪽 면
 	box.push_back(new QuadricShape(QuadricType::DISK, 5.0));
 	box[3]->rotateY(90.0f);
 	box[3]->move(-ROOT2 * radius / 2, 0.0f, ROOT2 * radius / 2);
 
 	// 아래쪽 면
 	box.push_back(new QuadricShape(QuadricType::DISK, 5.0));
-	box[4]->rotateX(90.0f);
+	box[4]->rotateX(-90.0f);
 	box[4]->move(0.0f, -radius / ROOT2, ROOT2 * radius / 2);
 
+	// 상자 뒤쪽 위치 = 0.0
+	// 상자 앞쪽(카메라쪽) 위치 = radius/ROOT2
+	for (int i{}; i < 20; ++i)
+		ball.push_back(new QuadricShape(QuadricType::SPHERE, 0.5,0.0, randBallPosX(gen), randBallPosY(gen),randBallPosZ(gen)));
 
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
 	glutDisplayFunc(MyGL::draw);
 	glutReshapeFunc(MyGL::reShape);
 	//glutMouseFunc(MyGL::mouse);
-	glutMotionFunc(MyGL::motion);
+	//glutMotionFunc(MyGL::motion);
 	glutPassiveMotionFunc(MyGL::passiveMotion);
 	glutKeyboardFunc(MyGL::keyboard);
 	glutSpecialFunc(MyGL::specialKeyboard);

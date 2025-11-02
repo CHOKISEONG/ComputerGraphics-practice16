@@ -25,4 +25,8 @@ std::uniform_int_distribution<> zeroOrOne(0, 1);
 std::uniform_int_distribution<> zeroToFour(0, 4);
 std::uniform_int_distribution<> uid(0, 200); 
 
+std::uniform_real_distribution<float> randBallPosX(-4.0f / ROOT2, 4.0f / ROOT2);
+std::uniform_real_distribution<float> randBallPosY(-4.0f / ROOT2, 4.0f / ROOT2);
+std::uniform_real_distribution<float> randBallPosZ(0.5f, 5.0f/ROOT2);
+
 
