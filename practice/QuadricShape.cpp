@@ -69,7 +69,7 @@ void QuadricShape::moveP()
 {
 	if (!isMove[3]) return;
 
-
+	rotateZ(speed_P);
 }
 
 void QuadricShape::draw(GLuint shaderProgram) const
