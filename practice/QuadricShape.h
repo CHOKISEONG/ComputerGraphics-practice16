@@ -41,9 +41,12 @@ class QuadricShape : public ShapeManager
     float angle_y = 0.0f;
     float angle_z = 0.0f;
 
-    bool isMove[4];
-    glm::vec3 targetPos;
-    float speed;
+    bool isMove[4]{ false,false,false,false };
+    glm::vec3 targetPos = glm::vec3(0.0f);
+    float speed = 0.01f;  // 이동 속도
+    float amount_L = 0.0f; // 이동한 양
+    float amount_G = 0.0f; // 이동한 양
+    float amount_P = 0.0f; // 이동한 양
 public:
     QuadricShape(QuadricType type, GLdouble rad = 1.0, GLdouble height = 5.0, float x = 0.0f, float y = 0.0f, float z = 0.0f);
     ~QuadricShape();
@@ -60,9 +63,9 @@ public:
     //실습 20
     void stopMove() { for (int i{}; i < 4; ++i) isMove[i] = false; }
     void startT() { isMove[0] = true; }
-    void startL(const glm::vec3 p) { isMove[1] = true; targetPos = p; }
-    void startG(float s) { isMove[2] = true; speed = s; }
-    void startP(float s) { isMove[3] = true; speed = s; }
+    void startL(const glm::vec3 p) { isMove[1] = true; targetPos = p - pos; amount_L = 0.0f; }
+    void startG(float s) { isMove[2] = true; speed = s; amount_G = 0.0f; }
+    void startP(float s) { isMove[3] = true; speed = s; amount_P = 0.0f; }
     void moveT();
     void moveL();
     void moveG();

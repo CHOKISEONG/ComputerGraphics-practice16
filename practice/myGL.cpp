@@ -72,6 +72,10 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		obj[9]->startL(obj[6]->getPos());
 		obj[10]->startL(obj[7]->getPos());
 		obj[11]->startL(obj[8]->getPos());
+		obj[12]->startL(obj[13]->getPos());
+		obj[13]->startL(obj[12]->getPos());
+		obj[14]->startL(obj[15]->getPos());
+		obj[15]->startL(obj[14]->getPos());
 		break;
 	}
 	case'g':

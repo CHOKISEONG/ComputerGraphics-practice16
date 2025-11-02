@@ -31,18 +31,30 @@ void QuadricShape::update()
 void QuadricShape::moveT()
 {
 	if (!isMove[0]) return;
+
+
 }
 void QuadricShape::moveL()
 {
 	if (!isMove[1]) return;
+	
+	if (amount_L <= 1.0f)
+	{
+		pos.z += targetPos.z * speed;
+	}
+	amount_L += speed;
 }
 void QuadricShape::moveG()
 {
 	if (!isMove[2]) return;
+
+
 }
 void QuadricShape::moveP()
 {
 	if (!isMove[3]) return;
+
+
 }
 
 void QuadricShape::draw(GLuint shaderProgram) const
