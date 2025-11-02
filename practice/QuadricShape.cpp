@@ -103,7 +103,16 @@ void QuadricShape::draw2(GLuint shaderProgram, DrawType drawType) const
 	if (type == QuadricType::SPHERE)		
 		gluSphere(obj, radius, slices, stacks);
 	else if (type == QuadricType::CYLINDER)
+	{
+		gluDisk(obj, 0.0, radius, slices, stacks);
 		gluCylinder(obj, radius, radius, height, slices, stacks);
+		glm::mat4 top = model;
+		top = glm::translate(top, glm::vec3(0.0f, 0.0f, height)); // z축으로 height만큼 이동
+
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(top));
+		gluDisk(obj, 0.0, radius, slices, stacks);
+	}
+		
 	else if (type == QuadricType::DISK)		
 		gluDisk(obj, 0.0, radius, slices, stacks);
 }
