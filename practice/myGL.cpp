@@ -144,27 +144,33 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 }
 void MyGL::specialKeyboard(int key, int x, int y)
 {
+	glm::vec3 pos = obj[0]->getPos();
+	
 	switch (key)
 	{
 	case GLUT_KEY_UP:
+		if (pos.z < -25.0f) return;
 		for (auto& o : obj)
 		{
 			o->move(0.0f, 0.0f, -1.0f);
 		}
 		break;
 	case GLUT_KEY_DOWN:
+		if (pos.z > 25.0f) return;
 		for (auto& o : obj)
 		{
 			o->move(0.0f, 0.0f, 1.0f);
 		}
 		break;
 	case GLUT_KEY_LEFT:
+		if (pos.x < -20.0f) return;
 		for (auto& o : obj)
 		{
 			o->move(-1.0f, 0.0f, 0.0f);
 		}
 		break;
 	case GLUT_KEY_RIGHT:
+		if (pos.x > 20.0f) return;
 		for (auto& o : obj)
 		{
 			o->move(1.0f, 0.0f, 0.0f);
