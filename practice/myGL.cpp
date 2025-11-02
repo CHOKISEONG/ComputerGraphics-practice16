@@ -195,15 +195,54 @@ void MyGL::run(int argc, char** argv)
 	obj[1]->move(0.0f, 0.0f, 5.0f);
 
 	// ÅÊÅ© Áß¾Ó ¸öÃ¼ (idx 3~5)
-	obj.push_back(new QuadricShape(CYLINDER, 1.0, 4.0));
-	obj.push_back(new QuadricShape(DISK));
-	obj.push_back(new QuadricShape(DISK));
+	obj.push_back(new QuadricShape(CYLINDER, 0.5, 4.0));
+	obj.push_back(new QuadricShape(DISK, 0.5));
+	obj.push_back(new QuadricShape(DISK, 0.5));
 	obj[4]->setColor(obj[3]->getColor());
 	obj[5]->setColor(obj[3]->getColor());
-	obj[3]->move(0.0f, 1.5f, 0.5f);
-	obj[4]->move(0.0f, 1.5f, 0.5f);
-	obj[5]->move(0.0f, 1.5f, 4.5f);
+	obj[3]->move(0.0f, 1.0f, 0.5f);
+	obj[4]->move(0.0f, 1.0f, 0.5f);
+	obj[5]->move(0.0f, 1.0f, 4.5f);
 
+	// À§ ¸öÃ¼ 1 (idx 6~8)
+	obj.push_back(new QuadricShape(CYLINDER, 1.0, 1.5));
+	obj.push_back(new QuadricShape(DISK, 1.0));
+	obj.push_back(new QuadricShape(DISK, 1.0));
+	obj[6]->move(0.0f, 2.0f, 0.5f);
+	obj[7]->move(0.0f, 2.0f, 0.5f);
+	obj[8]->move(0.0f, 2.0f, 2.0f);
+
+	// À§ ¸öÃ¼ 2 (idx 9~11)
+	obj.push_back(new QuadricShape(CYLINDER, 1.0, 1.5));
+	obj.push_back(new QuadricShape(DISK, 1.0));
+	obj.push_back(new QuadricShape(DISK, 1.0));
+	obj[9]->move(0.0f, 2.0f, 3.0f);
+	obj[10]->move(0.0f, 2.0f, 3.0f);
+	obj[11]->move(0.0f, 2.0f, 4.5f);
+
+	// Æ÷½Å (idx 12, 13)
+	obj.push_back(new QuadricShape(CYLINDER, 0.1, 3.0));
+	obj.push_back(new QuadricShape(CYLINDER, 0.1, 3.0));
+	obj[13]->setColor(obj[12]->getColor());
+	obj[12]->rotateY(-90.0f);
+	obj[13]->rotateY(-90.0f);
+	obj[12]->move(0.0f, 2.0f, 1.25f);
+	obj[13]->move(0.0f, 2.0f, 3.75f);
+
+	// ±ê´ë (idx 14, 15)
+	obj.push_back(new QuadricShape(CYLINDER, 0.2, 1.5));
+	obj.push_back(new QuadricShape(CYLINDER, 0.2, 1.5));
+	obj[15]->setColor(obj[14]->getColor());
+	obj[14]->rotateX(-90.0f);
+	obj[15]->rotateX(-90.0f);
+	obj[14]->move(0.0f, 2.0f, 1.25f);
+	obj[15]->move(0.0f, 2.0f, 3.75f);
+	
+	obj[7]->setColor(obj[6]->getColor());
+	obj[8]->setColor(obj[6]->getColor());
+	obj[9]->setColor(obj[6]->getColor());
+	obj[10]->setColor(obj[6]->getColor());
+	obj[11]->setColor(obj[6]->getColor());
 	for (auto& o : obj)
 	{
 		o->rotateZ(45.0f);
