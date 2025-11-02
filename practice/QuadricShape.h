@@ -44,6 +44,7 @@ class QuadricShape : public ShapeManager
     bool isMove[4]{ false,false,false,false };
     glm::vec3 targetPos = glm::vec3(0.0f);
     float speed = 0.01f;  // 이동 속도
+    float speed_G = 0.2f;
     float amount_T = 0.0f;
     float amount_L = 0.0f; // 이동한 양
     float amount_G = 0.0f; // 이동한 양
@@ -65,7 +66,7 @@ public:
     void stopMove() { for (int i{}; i < 4; ++i) isMove[i] = false; }
     void startT() { isMove[0] = true; }
     void startL(const glm::vec3 p) { isMove[1] = true; targetPos = p - pos; amount_L = 0.0f; }
-    void startG() { isMove[2] = true; amount_G = 0.0f; }
+    void startG(bool invert) { isMove[2] = true; amount_G = 0.0f; if (invert) speed_G = -speed_G; }
     void startP() { isMove[3] = true; amount_P = 0.0f; }
     void moveT();
     void moveL();

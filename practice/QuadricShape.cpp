@@ -34,8 +34,9 @@ void QuadricShape::moveT()
 	if (amount_T <= 1.0f)
 	{
 		pos.z += targetPos.z * speed;
+		amount_T += speed;
 	}
-	amount_T += speed;
+	
 }
 void QuadricShape::moveL()
 {
@@ -44,14 +45,25 @@ void QuadricShape::moveL()
 	if (amount_L <= 1.0f)
 	{
 		pos.z += targetPos.z * speed;
+		amount_L += speed;
 	}
-	amount_L += speed;
+	
 }
 void QuadricShape::moveG()
 {
 	if (!isMove[2]) return;
 
-
+	if (-15.0f <= amount_G && amount_G <= 15.0f)
+	{
+		rotateY(speed_G);
+		amount_G += speed_G;
+	}
+	else
+	{
+		speed_G = -speed_G;
+		amount_G += speed_G;
+	}
+		
 }
 void QuadricShape::moveP()
 {

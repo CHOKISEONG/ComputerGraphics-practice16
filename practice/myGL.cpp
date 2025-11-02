@@ -73,8 +73,8 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	}
 	case'g':
 	{
-		obj[4]->startG();
-		obj[5]->startG();
+		obj[4]->startG(false);
+		obj[5]->startG(true);
 		break;
 	}
 	case'p':
