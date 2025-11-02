@@ -33,7 +33,7 @@ void QuadricShape::moveT()
 
 	if (amount_T <= 1.0f)
 	{
-		pos.z += targetPos.z * speed;
+		// T는 생각보다 코드가 많을 것 같아서 나중에 하기
 		amount_T += speed;
 	}
 	
