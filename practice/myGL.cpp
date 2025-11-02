@@ -220,6 +220,10 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		{
 			shapes[i]->stopAll();
 		}
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->startMove();
+		}
 		shapes[0]->startMoveT(shapes[1]->getMidpoint());
 		shapes[1]->startMoveT(shapes[0]->getMidpoint());
 		break;
@@ -230,12 +234,20 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		{
 			shapes[i]->stopAll();
 		}
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->startMove();
+		}
 		shapes[0]->startMoveU(shapes[1]->getMidpoint());
 		shapes[1]->startMoveU(shapes[0]->getMidpoint());
 		break;
 	}
 	case 'v': {
 		// 뭔말인지 모름
+		for (int i{}; i < shapes.size(); ++i)
+		{
+			shapes[i]->startMove();
+		}
 		shapes[0]->startMoveV(true);
 		shapes[1]->startMoveV(false);
 		break;
