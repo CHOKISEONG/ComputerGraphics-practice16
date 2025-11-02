@@ -68,15 +68,7 @@ void QuadricShape::draw2(GLuint shaderProgram, DrawType drawType) const
 	else if (type == QuadricType::DISK)		
 		gluDisk(obj, 0.0, radius, slices, stacks);
 }
-bool checkCollisionWithCylinder(const glm::vec3& point, const glm::mat4& cylinderModel, float radius, float height) {
-	glm::mat4 invModel = glm::inverse(cylinderModel);
-	glm::vec4 localPoint = invModel * glm::vec4(point, 1.0f);
-	// 실린더는 (0,0,0) ~ (0,0,height) 범위에 있고, 반지름 radius
-	if (localPoint.z < 0.0f || localPoint.z > height) return false;
-	float dist = sqrt(localPoint.x * localPoint.x + localPoint.y * localPoint.y);
-	if (dist > radius) return false;
-	return true;
-}
+
 void QuadricShape::move(float x, float y, float z, bool changeTargetPos)
 {
 	pos += glm::vec3(x, y, z);

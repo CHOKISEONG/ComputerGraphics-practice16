@@ -15,8 +15,8 @@ Camera* cam;
 /// 그려질 도형들을 모아놓는 곳
 /// </summary>
 std::vector<QuadricShape*> box; 
-std::vector<QuadricShape*> smallBox;
 std::vector<QuadricShape*> ball;
+std::vector<PolygonShape*> cube;
 std::vector<GLfloat*> color;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 20.0f);
@@ -38,8 +38,8 @@ void MyGL::idle()
 	for (auto& ball : ball)
 		ball->update();
 
-	for (auto& sb : smallBox)
-		sb->update();
+	for (auto& c : cube)
+		c->update();
 
 	glutPostRedisplay();
 }
