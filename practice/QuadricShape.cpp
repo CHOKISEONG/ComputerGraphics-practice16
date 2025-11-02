@@ -24,27 +24,6 @@ QuadricShape::~QuadricShape()
 	gluDeleteQuadric(obj);
 }
 
-void QuadricShape::update(bool isUpdate)
-{
-	if (!isUpdate) return;
-
-	accel += gravity * 0.01f; 
-
-	pos.y += accel * 0.01f;
-
-	// 바닥 닿으면 튕기기
-	if (pos.y < -4.5f / ROOT2)
-	{
-		pos.y = -4.5f/ROOT2; 
-		accel = -accel * bounceFactor;
-		if (std::abs(accel) < 0.1f) { 
-			accel = 0.0f;
-		}
-	}
-
-	std::cout << "pos.y: " << pos.y << ", accel: " << accel << "\n";
-}
-
 void QuadricShape::draw(GLuint shaderProgram) const
 {
 	return;
@@ -77,22 +56,98 @@ void QuadricShape::draw2(GLuint shaderProgram, DrawType drawType) const
 		gluSphere(obj, radius, slices, stacks);
 	else if (type == QuadricType::CYLINDER)
 	{
-		gluDisk(obj, 0.0, radius, slices, stacks);
+		//gluDisk(obj, 0.0, radius, slices, stacks);
 		gluCylinder(obj, radius, radius, height, slices, stacks);
-		glm::mat4 top = model;
-		top = glm::translate(top, glm::vec3(0.0f, 0.0f, height)); // z축으로 height만큼 이동
+		//glm::mat4 top = model;
+		//top = glm::translate(top, glm::vec3(0.0f, 0.0f, height)); // z축으로 height만큼 이동
 
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(top));
-		gluDisk(obj, 0.0, radius, slices, stacks);
+		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(top));
+		//gluDisk(obj, 0.0, radius, slices, stacks);
 	}
 		
 	else if (type == QuadricType::DISK)		
 		gluDisk(obj, 0.0, radius, slices, stacks);
 }
-
+bool checkCollisionWithCylinder(const glm::vec3& point, const glm::mat4& cylinderModel, float radius, float height) {
+	glm::mat4 invModel = glm::inverse(cylinderModel);
+	glm::vec4 localPoint = invModel * glm::vec4(point, 1.0f);
+	// 실린더는 (0,0,0) ~ (0,0,height) 범위에 있고, 반지름 radius
+	if (localPoint.z < 0.0f || localPoint.z > height) return false;
+	float dist = sqrt(localPoint.x * localPoint.x + localPoint.y * localPoint.y);
+	if (dist > radius) return false;
+	return true;
+}
 void QuadricShape::move(float x, float y, float z, bool changeTargetPos)
 {
 	pos += glm::vec3(x, y, z);
 }
 
+void Ball::update()
+{
+	accel += gravity * 0.01f;
 
+	if (dir == DOWN_RIGHT)
+	{
+		pos.x += accel * 0.01f;
+		pos.y += accel * 0.01f;
+	}
+	else if (dir == UP_RIGHT)
+	{
+		pos.x += accel * 0.01f;
+		pos.y += -accel * 0.01f;
+	}
+	else if (dir == UP_LEFT)
+	{
+		pos.x += -accel * 0.01f;
+		pos.y += -accel * 0.01f;
+	}
+	else if (dir == DOWN_LEFT)
+	{
+		pos.x += -accel * 0.01f;
+		pos.y += accel * 0.01f;
+	}
+		
+	// 바닥 닿으면 튕기기
+	if (pos.y < -4.5f / ROOT2)
+	{
+		pos.y = -4.5f / ROOT2;
+		accel = accel * bounceFactor;
+		if (std::abs(accel) < 0.1f) {
+			accel = 0.0f;
+		}
+		dir = static_cast<BallDirection>((dir + 1) % 4);
+	}
+	if (pos.y > 4.5f / ROOT2)
+	{
+		pos.y = 4.5f / ROOT2;
+		accel = accel * bounceFactor;
+		if (std::abs(accel) < 0.1f) {
+			accel = 0.0f;
+		}
+		dir = static_cast<BallDirection>((dir + 1) % 4);
+	}
+	if (pos.x < -4.5f / ROOT2)
+	{
+		pos.x = -4.5f / ROOT2;
+		accel = accel * bounceFactor;
+		if (std::abs(accel) < 0.1f) {
+			accel = 0.0f;
+		}
+		dir = static_cast<BallDirection>((dir + 1) % 4);
+	}
+	if (pos.x > 4.5f / ROOT2)
+	{
+		pos.x = 4.5f / ROOT2;
+		accel = accel * bounceFactor;
+		if (std::abs(accel) < 0.1f) {
+			accel = 0.0f;
+		}
+		dir = static_cast<BallDirection>((dir + 1) % 4);
+	}
+}
+
+void Box::update()
+{
+
+	return;
+}

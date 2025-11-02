@@ -5,7 +5,7 @@
 class Camera
 {
 private:
-	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 10.0f);		// 위치
+	glm::vec3 pos = glm::vec3(0.0f, 0.0f, -10.0f);		// 위치
 	glm::vec3 direction = glm::vec3(0.0f,0.0f,0.0f);	// 바라보는 방향
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);			// 업벡터
 

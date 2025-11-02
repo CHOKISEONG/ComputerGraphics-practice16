@@ -15,12 +15,15 @@ Camera* cam;
 /// 그려질 도형들을 모아놓는 곳
 /// </summary>
 std::vector<QuadricShape*> box; 
+std::vector<QuadricShape*> smallBox;
 std::vector<QuadricShape*> ball;
 std::vector<GLfloat*> color;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 20.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float rotateAmount = 0.0f;
 
 void MyGL::reShape(int w, int h)
 {
@@ -33,7 +36,10 @@ void MyGL::idle()
 	cam->update();
 
 	for (auto& ball : ball)
-		ball->update(true);
+		ball->update();
+
+	for (auto& sb : smallBox)
+		sb->update();
 
 	glutPostRedisplay();
 }
@@ -45,7 +51,7 @@ void MyGL::draw()
 	cam->settingCamera(my->shaderProgramID);
 
 	for (auto& b : box)
-		b->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
+		b->draw2(my->shaderProgramID, DrawType::DRAW_WIRE);
 
 	for (auto& b : ball)
 		b->draw2(my->shaderProgramID, DrawType::DRAW_WIRE);
@@ -57,7 +63,28 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	static bool isRotateR = false;
 	switch (key)
 	{
-
+	case'z':
+	{
+		break;
+	}
+	case'Z':
+	{
+		break;
+	}
+	case'y':
+	{
+		break;
+	}
+	case'Y':
+	{
+		break;
+	}
+	case'B':
+	{
+		if (ball.size() < 5)
+			ball.push_back(new Ball(QuadricType::SPHERE, 0.5, 0.0, randBallPosX(gen), randBallPosY(gen), randBallPosZ(gen)));
+		break;
+	}
 	case 'q':
 		exit(0);
 	default: break;
@@ -88,7 +115,27 @@ void MyGL::passiveMotion(int x, int y)
 	float crx = (2.0f * x - my->width) / my->width;
 	float cry = -(2.0f * y - my->height) / my->height;
 
-	cam->move((crx - pvx) * 10, (cry - pvy) * 10);
+	//cam->move((crx - pvx) * 40, (cry - pvy) * 40);
+
+	// 위 아래는 rotateY
+	if (crx - pvx > 0.0f)
+	{
+		if (rotateAmount < 60.0f)
+		{
+			rotateAmount += 0.3f;
+			for (auto& o : box)
+				o->rotateZ(0.3f);
+		}
+	}
+	else if (crx - pvx < 0.1f)
+	{
+		if (rotateAmount > -60.0f)
+		{
+			rotateAmount -= 0.3f;
+			for (auto& o : box)
+				o->rotateZ(-0.3f);
+		}
+	}
 
 	pvx = crx;
 	pvy = cry;
@@ -117,35 +164,17 @@ void MyGL::run(int argc, char** argv)
 	//cam->rotateStartY(1.0f);
 
 	double radius = 5.0;
-	
+
 	// 뒤쪽 면
 	box.push_back(new QuadricShape(QuadricType::DISK, radius));
+	box[0]->move(0.0f, 0.0f, ROOT2 * radius);
 
-	// 오른쪽 면
-	box.push_back(new QuadricShape(QuadricType::DISK, 5.0));
-	box[1]->move(ROOT2* radius/2, 0.0f, ROOT2 * radius/2);
-	box[1]->setColor(0.5f, 0.5f, 0.5f);
-	box[1]->rotateY(-90.0f);
+	box.push_back(new QuadricShape(QuadricType::CYLINDER, radius, 2 * radius, 0.0f, 0.0f, -radius/ROOT2));
 
-	// 위쪽 면
-	box.push_back(new QuadricShape(QuadricType::DISK, 5.0));
-	box[2]->rotateX(90.0f);
-	box[2]->move(0.0f, radius / ROOT2, ROOT2 * radius / 2);
-
-	// 왼쪽 면
-	box.push_back(new QuadricShape(QuadricType::DISK, 5.0));
-	box[3]->rotateY(90.0f);
-	box[3]->move(-ROOT2 * radius / 2, 0.0f, ROOT2 * radius / 2);
-
-	// 아래쪽 면
-	box.push_back(new QuadricShape(QuadricType::DISK, 5.0));
-	box[4]->rotateX(-90.0f);
-	box[4]->move(0.0f, -radius / ROOT2, ROOT2 * radius / 2);
-
-	// 상자 뒤쪽 위치 = 0.0
-	// 상자 앞쪽(카메라쪽) 위치 = radius/ROOT2
-	for (int i{}; i < 20; ++i)
-		ball.push_back(new QuadricShape(QuadricType::SPHERE, 0.5,0.0, randBallPosX(gen), randBallPosY(gen),randBallPosZ(gen)));
+	// 상자 뒤쪽 중앙 (0, 0, 7)
+	// 상자 왼쪽 중앙(-3.5, 0, 3.5)
+	// 상자 오른쪽 중앙(3.5, 0, 3.5)
+	// 상자 위쪽 중앙
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
