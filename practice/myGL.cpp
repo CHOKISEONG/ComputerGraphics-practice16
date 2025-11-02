@@ -73,16 +73,21 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	}
 	case'y':
 	{
+		cam->rotateStart(0.1f);
 		break;
 	}
 	case'Y':
 	{
+		cam->rotateStart(-0.1f);
 		break;
 	}
 	case'B':
 	{
 		if (ball.size() < 5)
+		{
 			ball.push_back(new Ball(QuadricType::SPHERE, 0.5, 0.0, randBallPosX(gen), randBallPosY(gen), randBallPosZ(gen)));
+			std::cout << "make Ball\n";
+		}
 		break;
 	}
 	case 'q':
