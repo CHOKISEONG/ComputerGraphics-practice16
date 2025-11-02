@@ -40,6 +40,10 @@ class QuadricShape : public ShapeManager
     float angle_x = 0.0f;
     float angle_y = 0.0f;
     float angle_z = 0.0f;
+
+    bool isMove[4];
+    glm::vec3 targetPos;
+    float speed;
 public:
     QuadricShape(QuadricType type, GLdouble rad = 1.0, GLdouble height = 5.0, float x = 0.0f, float y = 0.0f, float z = 0.0f);
     ~QuadricShape();
@@ -52,6 +56,17 @@ public:
     void rotateX(float theta) { angle_x += theta; }
     void rotateY(float theta) { angle_y += theta; }
     void rotateZ(float theta) { angle_z += theta; }
+
+    //½Ç½À 20
+    void stopMove() { for (int i{}; i < 4; ++i) isMove[i] = false; }
+    void startT() { isMove[0] = true; }
+    void startL(const glm::vec3 p) { isMove[1] = true; targetPos = p; }
+    void startG(float s) { isMove[2] = true; speed = s; }
+    void startP(float s) { isMove[3] = true; speed = s; }
+    void moveT();
+    void moveL();
+    void moveG();
+    void moveP();
 
     void update();
     virtual void draw(GLuint shaderProgram) const override;

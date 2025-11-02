@@ -57,6 +57,35 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	static bool isRotateR = false;
 	switch (key)
 	{
+	case't':
+	{
+		obj[3]->startT();
+		obj[4]->startT();
+		obj[5]->startT();
+		break;
+	}
+	case'l':
+	{
+		obj[6]->startL(obj[9]->getPos());
+		obj[7]->startL(obj[10]->getPos());
+		obj[8]->startL(obj[11]->getPos());
+		obj[9]->startL(obj[6]->getPos());
+		obj[10]->startL(obj[7]->getPos());
+		obj[11]->startL(obj[8]->getPos());
+		break;
+	}
+	case'g':
+	{
+		obj[12]->startG(1.0f);
+		obj[13]->startG(-1.0f);
+		break;
+	}
+	case'p':
+	{
+		obj[14]->startP(1.0f);
+		obj[15]->startP(-1.0f);
+		break;
+	}
 	case'z':
 	{
 		cam->move(0.0f, 0.0f, 1.0f);
@@ -105,6 +134,8 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	case'o':
 	{
 		cam->rotateStop();
+		for (auto& o : obj)
+			o->stopMove();
 		break;
 	}
 	case 'q':

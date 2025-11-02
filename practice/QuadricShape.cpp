@@ -18,9 +18,31 @@ QuadricShape::~QuadricShape()
 	gluDeleteQuadric(obj);
 }
 
+
+
 void QuadricShape::update()
 {
+	moveT();
+	moveL();
+	moveG();
+	moveP();
 	return;
+}
+void QuadricShape::moveT()
+{
+	if (!isMove[0]) return;
+}
+void QuadricShape::moveL()
+{
+	if (!isMove[1]) return;
+}
+void QuadricShape::moveG()
+{
+	if (!isMove[2]) return;
+}
+void QuadricShape::moveP()
+{
+	if (!isMove[3]) return;
 }
 
 void QuadricShape::draw(GLuint shaderProgram) const
