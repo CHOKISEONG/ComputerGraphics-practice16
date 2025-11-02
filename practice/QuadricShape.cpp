@@ -11,6 +11,9 @@ QuadricShape::QuadricShape(QuadricType type, GLdouble rad, GLdouble height
 	color[0] = zeroToOne(gen);
 	color[1] = zeroToOne(gen);
 	color[2] = zeroToOne(gen);
+
+	// 처음에 실린더나 디스크 그리면 마름모처럼 그려져서 돌림
+	rotateZ(45.0f);
 }
 
 QuadricShape::~QuadricShape()

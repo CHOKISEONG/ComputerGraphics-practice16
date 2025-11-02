@@ -446,6 +446,10 @@ void PolygonShape::draw(GLuint shaderProgram) const
 	{
 		glDrawElements(GL_LINES, 2, GL_UNSIGNED_INT, 0);
 	}
+	else if (polygonType == PolygonType::RECTSHAPE)
+	{
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
 	else
 	{
 		for (int i = 0; i < index.size() / 3; ++i) {

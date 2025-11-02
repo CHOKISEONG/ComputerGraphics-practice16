@@ -5,7 +5,7 @@
 class Camera
 {
 private:
-	glm::vec3 pos = glm::vec3(0.0f, 5.0f, 5.0f);		// 위치
+	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 10.0f);		// 위치
 	glm::vec3 direction = glm::vec3(0.0f,0.0f,0.0f);	// 바라보는 방향
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);			// 업벡터
 
@@ -24,6 +24,7 @@ public:
 	void update();
 	void changeWidthHeight(float w, float h) { width = w, height = h; }
 	void move(float x, float y, float z = 0.0f) { pos.x += x; pos.y += y; pos.z += z; }
+	void targetMove(float x, float y, float z = 0.0f) { direction.x += x; direction.y += y; direction.z += z; }
 
 	// rotateX가 true면 x축회전, false면 y축회전으로 함
 	void rotate(float theta, bool rotateX); 
