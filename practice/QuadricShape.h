@@ -43,9 +43,9 @@ class QuadricShape : public ShapeManager
 
     // 공이 공중에 있는지 확인
     bool isAir = true;
-    float maxAccel = 1.0f;
+    const float gravity = -9.8f;
+    const float bounceFactor = 0.8f;
     float accel = 0.001f;
-    float dAccel = -0.0005f;
 public:
     QuadricShape(QuadricType type, GLdouble rad = 1.0, GLdouble height = 5.0, float x = 0.0f, float y = 0.0f, float z = 0.0f);
     ~QuadricShape();

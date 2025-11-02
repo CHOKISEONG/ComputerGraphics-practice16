@@ -27,29 +27,22 @@ QuadricShape::~QuadricShape()
 void QuadricShape::update(bool isUpdate)
 {
 	if (!isUpdate) return;
-	float outLineMin = -4.0f / ROOT2;
-	float outLineMax = 4.0f / ROOT2;
 
-	if (pos.y >= outLineMin && pos.y <= outLineMax)
+	accel += gravity * 0.01f; 
+
+	pos.y += accel * 0.01f;
+
+	// ¹Ù´Ú ´êÀ¸¸é Æ¨±â±â
+	if (pos.y < -4.5f / ROOT2)
 	{
-		move(0.0f, accel);
-	}
-	else if (pos.y < outLineMin)
-	{
-		move(0.0f, -accel);
-		accel = 0.0f;
-		dAccel = -dAccel;
-	}
-	else if (pos.y > outLineMax)
-	{
-		move(0.0f, -accel);
-		accel = 0.0f;
-		dAccel = -dAccel;
+		pos.y = -4.5f/ROOT2; 
+		accel = -accel * bounceFactor;
+		if (std::abs(accel) < 0.1f) { 
+			accel = 0.0f;
+		}
 	}
 
-	if (accel < maxAccel) accel += dAccel;
-
-	std::cout << "accel: " << accel << ", dAccel: " << dAccel << "\n";
+	std::cout << "pos.y: " << pos.y << ", accel: " << accel << "\n";
 }
 
 void QuadricShape::draw(GLuint shaderProgram) const
