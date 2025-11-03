@@ -21,41 +21,36 @@ enum DrawType
 class QuadricShape : public ShapeManager
 {
 protected:
-    QuadricType type; // 어떤 타입의 도형인지
+    QuadricType type; // 도형 타입
 
-    GLUquadric* obj;                               
-    glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::mat4 model = glm::mat4(1.0f);
-    GLfloat color[3];                   
+    GLUquadric* obj;
+    glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);       // 도형을 그릴 위치
+    glm::vec3 targetPos = glm::vec3(0.0f, 0.0f, 0.0f); // 위치에서 그려질 방향
+    GLfloat color[3];
+
     GLdouble radius;      // 반지름
-    GLdouble height;
-    int slices = 4;    // 경도 개수
-    int stacks = 10;    // 위도 개수
-
-    // 각 축마다 몇 도 기울어졌는지
-    float angle_x = 0.0f;
-    float angle_y = 0.0f;
-    float angle_z = 0.0f;
+    int slices = 4;       // 테두리 개수
+    int stacks = 2;      
 
 public:
-    QuadricShape(QuadricType type, GLdouble rad = 1.0, GLdouble height = 5.0, float x = 0.0f, float y = 0.0f, float z = 0.0f);
+    QuadricShape(QuadricType type, GLdouble rad = 1.0, float x = 0.0f, float y = 0.0f, float z = 0.0f);
     ~QuadricShape();
 
     void setColor(float r, float g, float b) { color[0] = r; color[1] = g; color[2] = b; }
     void setColor(float* c) { color[0] = c[0]; color[1] = c[1]; color[2] = c[2]; }
     void setSlices(int n) { slices = n; stacks = n; }
     float* getColor() { return color; }
-    const glm::vec3 getPos() const { return pos; }
 
-    glm::vec3 getAngle() { return glm::vec3(angle_x, angle_y, angle_z); }
-    void rotateX(float theta) { angle_x += theta; }
-    void rotateY(float theta) { angle_y += theta; }
-    void rotateZ(float theta) { angle_z += theta; }
+    GLUquadric* getObj() const { return obj; }
+    const glm::vec3 getPos() const { return pos; }
+    const glm::vec3 getTargetPos() const { return targetPos; }
+    void setTargetPos(const glm::vec3& t) { targetPos = t; }
+    void lookAt(const glm::vec3& t) { targetPos = t; }
 
     virtual void update() { return; }
     virtual void draw(GLuint shaderProgram) const override;
-    void draw2(GLuint shaderProgram, DrawType drawType = DRAW_WIRE) const;
-    void move(float x, float y, float z = 0.0f, bool changeTargetPos = false);
+    virtual void draw2(GLuint shaderProgram, DrawType drawType = DRAW_WIRE) const;
+    virtual void move(float x, float y, float z = 0.0f, bool changeTargetPos = false);
 };
 
 enum BallDirection
@@ -76,22 +71,36 @@ private:
 
     BallDirection dir = BallDirection::DOWN_RIGHT;
 public:
-    Ball(QuadricType type, GLdouble rad = 1.0, GLdouble height = 5.0, float x = 0.0f, float y = 0.0f, float z = 0.0f)
-        : QuadricShape(type, rad, height, x, y, z)
+    Ball(GLdouble rad = 1.0, float x = 0.0f, float y = 0.0f, float z = 0.0f)
+        : QuadricShape(SPHERE, rad, x, y, z)
     {
     }
     void update() override;
 };
 
+
 class Box : public QuadricShape
 {
 private:
-    const float floor = -4.5f / ROOT2;
-
+    std::vector<QuadricShape*> box;
+    float boxRadius;
 public:
-    Box(QuadricType type, GLdouble rad = 1.0, GLdouble height = 5.0, float x = 0.0f, float y = 0.0f, float z = 0.0f)
-        : QuadricShape(type, rad, height, x, y, z)
+    Box(GLdouble rad = 1.0, float x = 0.0f, float y = 0.0f, float z = 0.0f)
+        : QuadricShape(DISK, rad, x, y, z), boxRadius(rad / glm::sqrt(rad))
     {
+        float R = rad / glm::sqrt(rad);
+        box.reserve(6);
+        for (int i{}; i < 6; ++i)
+            box.push_back(new QuadricShape(QuadricType::DISK, R));
+        box[0]->move(0.0f, R, 0.0f, false);
+        box[1]->move(0.0f, -R, 0.0f, false);
+        box[2]->move(-R, 0.0f, 0.0f, false);
+        box[3]->move(R, 0.0f, 0.0f, false);
+        box[4]->move(0.0f, 0.0f, R, false);
+        box[5]->move(0.0f, 0.0f, -R, false);
     }
+
+    void move(float x, float y, float z = 0.0f, bool changeTargetPos = true) override;
     void update() override;
+    void draw2(GLuint shaderProgram, DrawType drawType = DRAW_WIRE) const override;
 };

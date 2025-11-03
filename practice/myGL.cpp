@@ -14,13 +14,11 @@ Camera* cam;
 /// <summary>
 /// 그려질 도형들을 모아놓는 곳
 /// </summary>
-std::vector<QuadricShape*> box; 
+std::vector<Box*> box; 
 std::vector<QuadricShape*> ball;
-std::vector<PolygonShape*> cube;
+std::vector<QuadricShape*> cube;
 std::vector<GLfloat*> color;
-float d = 0.2f; // 큐브의 초기 반지름
-float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
-					,d,d,-d,-d,d,-d,-d,-d,-d,d,-d,-d };
+
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 20.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -53,7 +51,7 @@ void MyGL::draw()
 	cam->settingCamera(my->shaderProgramID);
 
 	for (auto& b : box)
-		b->draw2(my->shaderProgramID, DrawType::DRAW_WIRE);
+		b->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
 
 	for (auto& b : ball)
 		b->draw2(my->shaderProgramID, DrawType::DRAW_WIRE);
@@ -90,7 +88,7 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	{
 		if (ball.size() < 5)
 		{
-			ball.push_back(new Ball(QuadricType::SPHERE, 0.5, 0.0, randBallPosX(gen), randBallPosY(gen), randBallPosZ(gen)));
+			ball.push_back(new Ball(0.1, randBallPosX(gen), randBallPosY(gen), randBallPosZ(gen)));
 			std::cout << "make Ball\n";
 		}
 		break;
@@ -125,26 +123,16 @@ void MyGL::passiveMotion(int x, int y)
 	float crx = (2.0f * x - my->width) / my->width;
 	float cry = -(2.0f * y - my->height) / my->height;
 
-	//cam->move((crx - pvx) * 40, (cry - pvy) * 40);
+	cam->move((crx - pvx) * 40, (cry - pvy) * 40);
 
 	// 위 아래는 rotateY
 	if (crx - pvx > 0.0f)
 	{
-		if (rotateAmount < 60.0f)
-		{
-			rotateAmount += 0.3f;
-			for (auto& o : box)
-				o->rotateZ(0.3f);
-		}
+
 	}
 	else if (crx - pvx < 0.1f)
 	{
-		if (rotateAmount > -60.0f)
-		{
-			rotateAmount -= 0.3f;
-			for (auto& o : box)
-				o->rotateZ(-0.3f);
-		}
+
 	}
 
 	pvx = crx;
@@ -171,23 +159,18 @@ void MyGL::run(int argc, char** argv)
 	make_shaderProgram();
 
 	cam = new Camera();
-	//cam->rotateStartY(1.0f);
 
-	double radius = 5.0;
 
-	// 뒤쪽 면
-	box.push_back(new QuadricShape(QuadricType::DISK, radius));
-	box[0]->move(0.0f, 0.0f, ROOT2 * radius);
+	
 
-	box.push_back(new QuadricShape(QuadricType::CYLINDER, radius, 2 * radius, 0.0f, 0.0f, -radius/ROOT2));
+	//  [박스 인덱스 도우미]
+	// 
+	//  0~5 순서대로 상,하,좌,우,앞,뒤
+	//
+	box.push_back(new Box(2.0));
+	
 
-	cube.push_back(new PolygonShape(PolygonType::CUBE, cubePos));
-	cube[0]->startMove();
-	cube[0]->startYRotate(0.001f);
-	// 상자 뒤쪽 중앙 (0, 0, 7)
-	// 상자 왼쪽 중앙(-3.5, 0, 3.5)
-	// 상자 오른쪽 중앙(3.5, 0, 3.5)
-	// 상자 위쪽 중앙
+	cube.push_back(new QuadricShape(QuadricType::CYLINDER));
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
