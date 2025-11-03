@@ -42,8 +42,9 @@ public:
     float* getColor() { return color; }
 
     GLUquadric* getObj() const { return obj; }
-    const glm::vec3 getPos() const { return pos; }
+    glm::vec3 getPos() const { return pos; }
     const glm::vec3 getTargetPos() const { return targetPos; }
+    void setPos(const glm::vec3& t) { pos = t; }
     void setTargetPos(const glm::vec3& t) { targetPos = t; }
     void lookAt(const glm::vec3& t) { targetPos = t; }
 
@@ -75,7 +76,7 @@ public:
         : QuadricShape(SPHERE, rad, x, y, z)
     {
     }
-    void update() override;
+    void update(float rad);
 };
 
 
@@ -84,6 +85,8 @@ class Box : public QuadricShape
 private:
     std::vector<QuadricShape*> box;
     float boxRadius;
+
+    float theta = 0.0f; // z축 회전만 있음
 public:
     Box(GLdouble rad = 1.0, float x = 0.0f, float y = 0.0f, float z = 0.0f)
         : QuadricShape(DISK, rad, x, y, z), boxRadius(rad / glm::sqrt(rad))
@@ -100,6 +103,10 @@ public:
         box[5]->move(0.0f, 0.0f, -R, false);
     }
 
+    const float getRadius() const { return boxRadius; }
+
+    void rotateZ(float theta);
+    
     void move(float x, float y, float z = 0.0f, bool changeTargetPos = true) override;
     void update() override;
     void draw2(GLuint shaderProgram, DrawType drawType = DRAW_WIRE) const override;

@@ -105,7 +105,10 @@ void QuadricShape::move(float x, float y, float z, bool changeTargetPos)
 	}
 }
 
-void Ball::update()
+/// <summary>
+/// Ball
+/// </summary>
+void Ball::update(float rad)
 {
 	accel += gravity * 0.01f;
 
@@ -131,46 +134,67 @@ void Ball::update()
 	}
 
 	// 바닥/벽 충돌 처리
-	if (pos.y < -4.5f / ROOT2)
+	if (pos.y < -rad)
 	{
-		pos.y = -4.5f / ROOT2;
+		pos.y = -rad;
 		accel = accel * bounceFactor;
 		if (std::abs(accel) < 0.1f) {
 			accel = 0.0f;
 		}
 		dir = static_cast<BallDirection>((dir + 1) % 4);
 	}
-	if (pos.y > 4.5f / ROOT2)
+	if (pos.y > rad)
 	{
-		pos.y = 4.5f / ROOT2;
+		pos.y = rad;
 		accel = accel * bounceFactor;
 		if (std::abs(accel) < 0.1f) {
 			accel = 0.0f;
 		}
 		dir = static_cast<BallDirection>((dir + 1) % 4);
 	}
-	if (pos.x < -4.5f / ROOT2)
+	if (pos.x < -rad)
 	{
-		pos.x = -4.5f / ROOT2;
+		pos.x = -rad;
 		accel = accel * bounceFactor;
 		if (std::abs(accel) < 0.1f) {
 			accel = 0.0f;
 		}
 		dir = static_cast<BallDirection>((dir + 1) % 4);
 	}
-	if (pos.x > 4.5f / ROOT2)
+	if (pos.x > rad)
 	{
-		pos.x = 4.5f / ROOT2;
+		pos.x = rad;
 		accel = accel * bounceFactor;
 		if (std::abs(accel) < 0.1f) {
 			accel = 0.0f;
 		}
 		dir = static_cast<BallDirection>((dir + 1) % 4);
 	}
+}
 
-	// Ball은 이동만 하므로, 기본적으로 targetPos를 진행 방향으로 두고 싶다면
-	// 예시: 항상 +Z로 1만큼 앞을 보게
-	// setTargetPos(pos + glm::vec3(0,0,1));
+
+
+/// <summary>
+/// Box
+/// </summary>
+void Box::rotateZ(float degree) // 지금 z축 회전만 구현함.
+{
+	if (theta + degree > 60.0f || theta + degree < -60.0f) return;
+
+	for (int i{}; i < 4; ++i)
+	{
+		glm::vec4 p(box[i]->getPos().x, box[i]->getPos().y, box[i]->getPos().z, 1.0f);
+
+		// 지금은 원점기준으로 돔
+		//p -= box[i]->getTargetPos();
+		glm::mat4 rotMat = glm::mat4(1.0f);
+		rotMat = glm::rotate(rotMat, glm::radians(degree), glm::vec3(0.0f, 0.0f, 1.0f));
+		p = rotMat * p;
+		//p += box[i]->getTargetPos();
+
+		box[i]->setPos(glm::vec3(p.x, p.y, p.z));
+	}
+	theta += degree;
 }
 
 void Box::move(float x, float y, float z, bool changeTargetPos)
@@ -197,6 +221,8 @@ void Box::draw2(GLuint shaderProgram, DrawType drawType) const
 	{
 		glm::mat4 model = buildLookAtOrientation(box[i]->getPos(), box[i]->getTargetPos());
 		model *= glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		if (i == 4 || i == 5)
+			model *= glm::rotate(glm::mat4(1.0f), glm::radians(theta), glm::vec3(0.0f, 0.0f, 1.0f));
 
 		unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));

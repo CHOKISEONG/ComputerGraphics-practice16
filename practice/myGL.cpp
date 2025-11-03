@@ -15,7 +15,7 @@ Camera* cam;
 /// 그려질 도형들을 모아놓는 곳
 /// </summary>
 std::vector<Box*> box; 
-std::vector<QuadricShape*> ball;
+std::vector<Ball*> ball;
 std::vector<QuadricShape*> cube;
 std::vector<GLfloat*> color;
 
@@ -36,7 +36,7 @@ void MyGL::idle()
 	cam->update();
 
 	for (auto& ball : ball)
-		ball->update();
+		ball->update(box[0]->getRadius());
 
 	for (auto& c : cube)
 		c->update();
@@ -123,16 +123,16 @@ void MyGL::passiveMotion(int x, int y)
 	float crx = (2.0f * x - my->width) / my->width;
 	float cry = -(2.0f * y - my->height) / my->height;
 
-	cam->move((crx - pvx) * 40, (cry - pvy) * 40);
+	//cam->move((crx - pvx) * 10, (cry - pvy) * 10);
 
 	// 위 아래는 rotateY
 	if (crx - pvx > 0.0f)
 	{
-
+		box[0]->rotate(-0.3f);
 	}
-	else if (crx - pvx < 0.1f)
+	else if (crx - pvx < 0.0f)
 	{
-
+		box[0]->rotate(0.3f);
 	}
 
 	pvx = crx;
@@ -160,17 +160,8 @@ void MyGL::run(int argc, char** argv)
 
 	cam = new Camera();
 
-
-	
-
-	//  [박스 인덱스 도우미]
-	// 
-	//  0~5 순서대로 상,하,좌,우,앞,뒤
-	//
 	box.push_back(new Box(2.0));
-	
 
-	cube.push_back(new QuadricShape(QuadricType::CYLINDER));
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
