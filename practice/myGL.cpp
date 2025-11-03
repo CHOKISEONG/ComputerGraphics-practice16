@@ -18,7 +18,9 @@ std::vector<QuadricShape*> box;
 std::vector<QuadricShape*> ball;
 std::vector<PolygonShape*> cube;
 std::vector<GLfloat*> color;
-
+float d = 0.2f; // 큐브의 초기 반지름
+float cubePos[24]{ d,d,d,-d,d,d,-d,-d,d,d,-d,d
+					,d,d,-d,-d,d,-d,-d,-d,-d,d,-d,-d };
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 20.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -55,6 +57,9 @@ void MyGL::draw()
 
 	for (auto& b : ball)
 		b->draw2(my->shaderProgramID, DrawType::DRAW_WIRE);
+
+	for (auto& c : cube)
+		c->draw(my->shaderProgramID);
 
 	glutSwapBuffers();
 }
@@ -176,6 +181,9 @@ void MyGL::run(int argc, char** argv)
 
 	box.push_back(new QuadricShape(QuadricType::CYLINDER, radius, 2 * radius, 0.0f, 0.0f, -radius/ROOT2));
 
+	cube.push_back(new PolygonShape(PolygonType::CUBE, cubePos));
+	cube[0]->startMove();
+	cube[0]->startYRotate(0.001f);
 	// 상자 뒤쪽 중앙 (0, 0, 7)
 	// 상자 왼쪽 중앙(-3.5, 0, 3.5)
 	// 상자 오른쪽 중앙(3.5, 0, 3.5)

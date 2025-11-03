@@ -9,7 +9,7 @@ private:
 	glm::vec3 direction = glm::vec3(0.0f,0.0f,0.0f);	// 바라보는 방향
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);			// 업벡터
 
-	float fovy = 90.0f;		// 뷰잉 각도
+	float fovy = 45.0f;		// 뷰잉 각도
 	float width = 1200.0f;	// 폭
 	float height = 800.0f;	// 높이
 	float zNear = 0.1f;		// 가까운 클리핑 평면까지의 거리
