@@ -4,22 +4,8 @@
 /// my OpenGL class
 /// --------------------
 #pragma once
-#include <iostream>
-#include <Windows.h> // for Sleep()
-#include <stdlib.h>
-#include <stdio.h>
-#include <format>
-#include <cmath>
-#include <vector>
 
-#include <gl/glew.h>
-#include <gl/freeglut.h>
-#include <gl/freeglut_ext.h> 
-#include <gl/glm/glm.hpp>
-#include <gl/glm/ext.hpp>
-#include <gl/glm/gtc/matrix_transform.hpp>
-#include <gl/glm/gtc/type_ptr.hpp> // glm::value_ptr
-
+#include "global.h"
 #include "Shape.h"
 
 class MyGL
