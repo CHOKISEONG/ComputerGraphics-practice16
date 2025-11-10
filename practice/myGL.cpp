@@ -42,13 +42,37 @@ void MyGL::draw()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(my->shaderProgramID);
-	cam->settingCamera(my->shaderProgramID);
+
+	// ºäÆ÷Æ® 1
+	glViewport(0, 0, my->width - 400, my->height);
+	cam->settingCamera(my->shaderProgramID, "perspective");
 
 	ground->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
 	for (int i{}; i < obj.size(); ++i)
 	{
 		obj[i]->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
 	}
+
+	// ºäÆ÷Æ® 2
+	glViewport(my->width - 400, my->height / 2, 400, my->height);
+	cam->settingCamera(my->shaderProgramID, "ortho_xz");
+
+	ground->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
+	for (int i{}; i < obj.size(); ++i)
+	{
+		obj[i]->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
+	}
+
+	// ºäÆ÷Æ® 3
+	glViewport(my->width - 400, 0, 400, my->height / 2);
+	cam->settingCamera(my->shaderProgramID, "ortho_xy");
+
+	ground->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
+	for (int i{}; i < obj.size(); ++i)
+	{
+		obj[i]->draw2(my->shaderProgramID, DrawType::DRAW_SOLID);
+	}
+
 	glutSwapBuffers();
 }
 void MyGL::keyboard(unsigned char key, int x, int y)

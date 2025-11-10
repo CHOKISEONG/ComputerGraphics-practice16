@@ -9,6 +9,14 @@ private:
 	glm::vec3 direction = glm::vec3(0.0f,0.0f,0.0f);	// ¹Ù¶óº¸´Â ¹æÇâ
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);			// ¾÷º¤ÅÍ
 
+	glm::vec3 orthoXZ_pos = glm::vec3(0.0f, 5.0f, 0.0f);
+	glm::vec3 orthoXZ_direction = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 orthoXZ_up = glm::vec3(0.0f, 0.0f, -1.0f);
+
+	glm::vec3 orthoXY_pos = glm::vec3(0.0f, 0.1f, 10.0f);
+	glm::vec3 orthoXY_direction = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 orthoXY_up = glm::vec3(0.0f, 1.0f, 0.0f);
+
 	float fovy = 90.0f;		// ºäÀ× °¢µµ
 	float width = 1200.0f;	// Æø
 	float height = 800.0f;	// ³ôÀÌ
@@ -19,7 +27,7 @@ private:
 	bool isRotateSelf = false;
 	float rotateSpeed = 0.0f;
 public:
-	void settingCamera(GLuint shaderProgram);
+	void settingCamera(GLuint shaderProgram, std::string str);
 
 	void update();
 	void changeWidthHeight(float w, float h) { width = w, height = h; }
