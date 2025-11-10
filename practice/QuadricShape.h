@@ -52,6 +52,8 @@ class QuadricShape : public ShapeManager
     float amount_P = 0.0f; // 이동한 양
 public:
     QuadricShape(QuadricType type, GLdouble rad = 1.0, GLdouble height = 5.0, float x = 0.0f, float y = 0.0f, float z = 0.0f);
+    QuadricShape(QuadricShape& other);
+    QuadricShape& operator=(const QuadricShape& other);
     ~QuadricShape();
 
     void setColor(float r, float g, float b) { color[0] = r; color[1] = g; color[2] = b; }

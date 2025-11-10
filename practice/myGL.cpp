@@ -18,6 +18,9 @@ QuadricShape* ground;
 std::vector<QuadricShape*> obj; // GLU ¸ðµ¨µé
 std::vector<GLfloat*> color;
 
+std::vector<QuadricShape*> orgObj;
+
+
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 20.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -139,12 +142,12 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 	}
 	case'r':
 	{
-		cam->rotateFromView(5.0f, false);
+		cam->rotateFromView(5.0f);
 		break;
 	}
 	case'R':
 	{
-		cam->rotateFromView(5.0f, false);
+		cam->rotateFromView(-5.0f);
 		break;
 	}
 	case 'a':
@@ -157,6 +160,16 @@ void MyGL::keyboard(unsigned char key, int x, int y)
 		cam->rotateStop();
 		for (auto& o : obj)
 			o->stopMove();
+		break;
+	}
+	case 'c':
+	{
+		for (size_t i = 0; i < obj.size(); ++i) {
+			*obj[i] = *orgObj[i];
+			obj[i]->stopMove();
+		}
+		cam->rotateStop();
+		cam->goBack();
 		break;
 	}
 	case 'q':
@@ -282,9 +295,14 @@ void MyGL::run(int argc, char** argv)
 	{
 		o->rotateZ(45.0f);
 	}
-	
 
-	obj.push_back(new QuadricShape(QuadricType::SPHERE, 0.1));
+	//obj.push_back(new QuadricShape(QuadricType::SPHERE, 0.1));
+
+	for (auto& o : obj) {
+		orgObj.push_back(new QuadricShape(*o));
+	}
+
+
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 

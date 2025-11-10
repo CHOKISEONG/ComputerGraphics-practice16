@@ -13,6 +13,65 @@ QuadricShape::QuadricShape(QuadricType type, GLdouble rad, GLdouble height
 	color[2] = zeroToOne(gen);
 }
 
+QuadricShape::QuadricShape(QuadricShape& other)
+	: ShapeManager(other),
+	type(other.type),
+	radius(other.radius),
+	height(other.height),
+	slices(other.slices),
+	stacks(other.stacks),
+	pos(other.pos),
+	angle_x(other.angle_x),
+	angle_y(other.angle_y),
+	angle_z(other.angle_z),
+	targetPos(other.targetPos),
+	speed(other.speed),
+	speed_G(other.speed_G),
+	speed_P(other.speed_P),
+	amount_T(other.amount_T),
+	amount_L(other.amount_L),
+	amount_G(other.amount_G),
+	amount_P(other.amount_P)
+{
+	obj = gluNewQuadric();
+	color[0] = other.color[0];
+	color[1] = other.color[1];
+	color[2] = other.color[2];
+	for (int i = 0; i < 4; ++i) isMove[i] = other.isMove[i];
+}
+QuadricShape& QuadricShape::operator=(const QuadricShape& other)
+{
+	if (this == &other) return *this;
+
+	type = other.type;
+	radius = other.radius;
+	height = other.height;
+	slices = other.slices;
+	stacks = other.stacks;
+	pos = other.pos;
+	color[0] = other.color[0];
+	color[1] = other.color[1];
+	color[2] = other.color[2];
+
+	if (obj) gluDeleteQuadric(obj);
+	obj = gluNewQuadric();
+
+	angle_x = other.angle_x;
+	angle_y = other.angle_y;
+	angle_z = other.angle_z;
+	for (int i = 0; i < 4; ++i) isMove[i] = other.isMove[i];
+	targetPos = other.targetPos;
+	speed = other.speed;
+	speed_G = other.speed_G;
+	speed_P = other.speed_P;
+	amount_T = other.amount_T;
+	amount_L = other.amount_L;
+	amount_G = other.amount_G;
+	amount_P = other.amount_P;
+
+	return *this;
+}
+
 QuadricShape::~QuadricShape()
 {
 	gluDeleteQuadric(obj);
